@@ -1,0 +1,3 @@
+[submodule "cellsnake/scrna"]
+	path = cellsnake/scrna
+	url = git@github.com:sinanugur/scrna-workflow.git
