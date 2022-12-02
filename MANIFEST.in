@@ -1,0 +1,5 @@
+include *.txt
+include Snakefile
+recursive-include cellsnake *.R
+recursive-include cellsnake *.smk
+recursive-include cellsnake Snakefile
