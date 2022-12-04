@@ -11,6 +11,7 @@ from docopt import docopt
 import os
 import sys
 import subprocess
+import shutil
 #from schema import Schema, And, Or, Use, SchemaError
 
 from collections import defaultdict
@@ -46,35 +47,46 @@ SOFTWARE.
 __doc__="""Main cellsnake executable
 
 Usage:
-    cellsnake --input <text> [--cpu <integer>] 
+    cellsnake --input <text> [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
     cellsnake --input <text> [--unlock|--remove] [--dry]
+    cellsnake --generate-configfile-template
     cellsnake (-h | --help)
     cellsnake --version
 
 Arguments:
-    -i <text>, --input <text>              Input directory or a file to process.
-    -c <integer>, --cpu <integer>          CPUs. [default: 2]
+    -i <text>, --input <text>               Input directory or a file to process.
+    -c <test>, --configfile <text>          Config file name (if not supplied, it will use default settings, you may generate a template, change it and use it in your runs).
+    -j <integer>, --jobs <integer>          Total CPUs. [default: 2]
+    --species <text>                        Species: human or mouse [default: human] 
 
 Options:
-    -u, --unlock            Rescue stalled jobs (Try this if the previous job ended prematurely).
-    -r, --remove            Clear all output files (this won't remove input files).
-    -d, --dry               Dry run, nothing will be generated.
-    -h, --help              Show this screen.
-    --version               Show version.
+    -u, --unlock                       Rescue stalled jobs (Try this if the previous job ended prematurely).
+    -r, --remove                       Clear all output files (this won't remove input files).
+    -d, --dry                          Dry run, nothing will be generated.
+    -h, --help                         Show this screen.
+    --version                          Show version.
+    --generate-configfile-template     Generate config file template in the current directory.
 
 """
 
 
-def run_cellsnake():
-    arguments = docopt(__doc__, version=__version__)
+def run_cellsnake(arguments):
+    
     params="'{p}'".format(p=" ".join(sys.argv))
+
     dry_run="-n" if arguments["--dry"] else ""
     unlock="--unlock" if arguments["--unlock"] else ""
+    configfile=arguments['--configfile'] if arguments['--configfile'] else cellsnake_path + "/scrna/config.yaml"
     remove="--delete-all-output" if arguments["--remove"] else ""
-    print(type(arguments['--cpu']))
-    snakemake_argument="snakemake --rerun-incomplete {dry} {unlock} {remove} -j {cpu} -s {cellsnake_path}/workflow/Snakefile --config cellsnake_path={cellsnake_path} --configfile=config.yaml".format(
-    cpu=arguments['--cpu'],
-    cellsnake_path=cellsnake_path,
+    
+    
+
+
+
+    snakemake_argument="snakemake --rerun-incomplete {dry} {unlock} {remove} -j {jobs} -s {cellsnake_path}workflow/Snakefile --config cellsnake_path={cellsnake_path} --configfile={configfile}".format(
+    jobs=arguments['--jobs'],
+    configfile=configfile,
+    cellsnake_path=cellsnake_path + "/scrna/",
     dry=dry_run,
     unlock=unlock,
     remove=remove,
@@ -85,5 +97,10 @@ def run_cellsnake():
 
 
 def main():
-        run_cellsnake()
-
+        arguments = docopt(__doc__, version=__version__)
+        if arguments["--generate-configfile-template"]:
+            print("Generating config.yaml file...")
+            print("You can use this as a template for a cellsnake run. You may change the settings.")
+            shutil.copyfile(cellsnake_path + "/scrna/config.yaml", 'config.yaml')
+            return
+        run_cellsnake(arguments)
