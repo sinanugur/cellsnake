@@ -12,6 +12,8 @@ import os
 import sys
 import subprocess
 import shutil
+import datetime
+import random
 #from schema import Schema, And, Or, Use, SchemaError
 
 from collections import defaultdict
@@ -44,56 +46,118 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-__doc__="""Main cellsnake executable
+__doc__=f"""Main cellsnake executable, version: {__version__}
 
 Usage:
-    cellsnake --input <text> [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
-    cellsnake --input <text> [--unlock|--remove] [--dry]
+    cellsnake <INPUT> [--resolution] [--percent_mt] [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
+    cellsnake <INPUT> [--only-clustree] [--percent_mt] [--configfile <text>] [--jobs <integer>] 
+    cellsnake <INPUT> [--unlock|--remove] [--dry]
     cellsnake --generate-configfile-template
     cellsnake (-h | --help)
     cellsnake --version
 
 Arguments:
-    -i <text>, --input <text>               Input directory or a file to process.
+    INPUT                                   Input directory or a file to process (if a directory given, batch mode is ON).
     -c <test>, --configfile <text>          Config file name (if not supplied, it will use default settings, you may generate a template, change it and use it in your runs).
+    --resolution                            Resolution for cluster detection, write "auto" for auto detection [default: 0.8]. You can also use config file for this.
+    --percent_mt                            Maximum mitochondrial gene percentage cutoff, for example 5 or 10 [default: auto]. You can also use config file for this.
     -j <integer>, --jobs <integer>          Total CPUs. [default: 2]
     --species <text>                        Species: human or mouse [default: human] 
 
 Options:
+    --only-clustree                    Generate only clustree plot (see github.com/lazappi/clustree).
+    --generate-configfile-template     Generate config file template in the current directory.
     -u, --unlock                       Rescue stalled jobs (Try this if the previous job ended prematurely).
     -r, --remove                       Clear all output files (this won't remove input files).
     -d, --dry                          Dry run, nothing will be generated.
     -h, --help                         Show this screen.
     --version                          Show version.
-    --generate-configfile-template     Generate config file template in the current directory.
 
 """
 
 
-def run_cellsnake(arguments):
+class CommandLine:
+    def __init__(self):
+        self.snakemake="snakemake --rerun-incomplete"
+        self.runid="".join(random.choices("abcdefghisz",k=3) + random.choices("123456789",k=5))
+        self.config=[]
+        self.configfile=False
+    def __str__(self):
+        return self.snakemake
+    def __repr__(self):
+        return self.snakemake
     
+    def add_configs(self):
+        self.snakemake = self.snakemake + " --config " + " ".join(self.config)
+
+
+    def add_configfile_argument(self,arguments):
+        if self.configfile is False:
+            if arguments["--configfile"]:
+                self.snakemake = self.snakemake + " --configfile={}".format(arguments["--configfile"])
+            else:
+                self.snakemake = self.snakemake + " --configfile={}".format(cellsnake_path + "/scrna/config.yaml")
+            self.configfile=True
+
+    def prepare_arguments(self,arguments):
+        self.snakemake = self.snakemake +  " -j {} ".format(arguments['--jobs']) #set CPU number
+        self.snakemake = self.snakemake +  " -s {} ".format(f"{cellsnake_path}/scrna/workflow/Snakefile") #set Snakefile location
+        self.add_configfile_argument(arguments)
+        self.config.append("datafolder={}".format(arguments['<INPUT>']))
+        self.config.append(f"cellsnake_path={cellsnake_path}/scrna/")
+
+        if arguments["--only-clustree"]:
+            self.config.append("route=clustree")
+            self.add_configs()
+            return
+        
+
+        if arguments["--dry"]:
+            self.snakemake = self.snakemake + " -n "
+        if arguments["--unlock"]:
+            self.snakemake = self.snakemake + " --unlock "
+        
+        self.add_configs()
+        
+    
+    def write_to_log(self):
+        filename = "_".join(["cellsnake",self.runid, datetime.datetime.now().strftime("%y%m%d_%H%M%S"),"runlog"])
+        with open(filename,"w") as f:
+            f.write(self.snakemake + "\n")
+
+
+
+
+def run_cellsnake(arguments):
+    snakemake_argument=CommandLine()
+    snakemake_argument.prepare_arguments(arguments)
+    subprocess.check_call(str(snakemake_argument),shell=True)
+    snakemake_argument.write_to_log()
+
+
+"""
+def run_cellsnake(arguments):
     params="'{p}'".format(p=" ".join(sys.argv))
 
     dry_run="-n" if arguments["--dry"] else ""
     unlock="--unlock" if arguments["--unlock"] else ""
     configfile=arguments['--configfile'] if arguments['--configfile'] else cellsnake_path + "/scrna/config.yaml"
     remove="--delete-all-output" if arguments["--remove"] else ""
-    
-    
+    clustree="route=clustree" if arguments["--only-clustree"] else ""
 
 
-
-    snakemake_argument="snakemake --rerun-incomplete {dry} {unlock} {remove} -j {jobs} -s {cellsnake_path}workflow/Snakefile --config cellsnake_path={cellsnake_path} --configfile={configfile}".format(
+    snakemake_argument="snakemake --rerun-incomplete {dry} {unlock} {remove} -j {jobs} -s {cellsnake_path}workflow/Snakefile --config cellsnake_path={cellsnake_path} {clustree} --configfile={configfile}".format(
     jobs=arguments['--jobs'],
     configfile=configfile,
     cellsnake_path=cellsnake_path + "/scrna/",
     dry=dry_run,
+    clustree=clustree,
     unlock=unlock,
     remove=remove,
     params=params)
     
     subprocess.check_call(snakemake_argument,shell=True)
-
+"""
 
 
 def main():
