@@ -7,6 +7,8 @@ cellsnake main
 
 #from __future__ import print_function
 import re
+import warnings
+warnings.filterwarnings("ignore")
 from docopt import docopt
 import os
 import sys
@@ -14,6 +16,13 @@ import subprocess
 import shutil
 import datetime
 import random
+from fuzzywuzzy import fuzz
+import errno
+import os
+import yaml
+from yaml.loader import SafeLoader
+
+
 #from schema import Schema, And, Or, Use, SchemaError
 
 from collections import defaultdict
@@ -49,8 +58,9 @@ SOFTWARE.
 __doc__=f"""Main cellsnake executable, version: {__version__}
 
 Usage:
-    cellsnake <INPUT> [--resolution] [--percent_mt] [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
-    cellsnake <INPUT> [--only-clustree] [--percent_mt] [--configfile <text>] [--jobs <integer>] 
+    cellsnake <INPUT> [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
+    cellsnake <INPUT> [--only-clustree] [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--dry]
+    cellsnake --seurat-integration [--resolution <text>]  [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
     cellsnake <INPUT> [--unlock|--remove] [--dry]
     cellsnake --generate-configfile-template
     cellsnake (-h | --help)
@@ -59,14 +69,15 @@ Usage:
 Arguments:
     INPUT                                   Input directory or a file to process (if a directory given, batch mode is ON).
     -c <test>, --configfile <text>          Config file name (if not supplied, it will use default settings, you may generate a template, change it and use it in your runs).
-    --resolution                            Resolution for cluster detection, write "auto" for auto detection [default: 0.8]. You can also use config file for this.
-    --percent_mt                            Maximum mitochondrial gene percentage cutoff, for example 5 or 10 [default: auto]. You can also use config file for this.
+    --resolution <text>                     Resolution for cluster detection, write "auto" for auto detection [default: 0.8].
+    --percent_mt <text>                     Maximum mitochondrial gene percentage cutoff, for example 5 or 10 [default: auto]. NA for integration.
     -j <integer>, --jobs <integer>          Total CPUs. [default: 2]
     --species <text>                        Species: human or mouse [default: human] 
 
 Options:
     --only-clustree                    Generate only clustree plot (see github.com/lazappi/clustree).
     --generate-configfile-template     Generate config file template in the current directory.
+    --seurat-integration               Use Seurat integration, run inside "cellsnake" folder after regular workflow successfully concludes.
     -u, --unlock                       Rescue stalled jobs (Try this if the previous job ended prematurely).
     -r, --remove                       Clear all output files (this won't remove input files).
     -d, --dry                          Dry run, nothing will be generated.
@@ -82,54 +93,95 @@ class CommandLine:
         self.runid="".join(random.choices("abcdefghisz",k=3) + random.choices("123456789",k=5))
         self.config=[]
         self.configfile=False
+        self.paramaters=dict()
+        
     def __str__(self):
         return self.snakemake
     def __repr__(self):
         return self.snakemake
     
-    def add_configs(self):
+    def check_arguments(self,arguments):
+        if not os.path.exists(arguments["<INPUT>"]):
+            print("File or directory not found:",arguments["<INPUT>"])
+            return False
+
+
+        
+
+    def add_config_argument(self):
         self.snakemake = self.snakemake + " --config " + " ".join(self.config)
 
 
-    def add_configfile_argument(self,arguments):
+    def load_and_add_default_configfile_argument(self,arguments):
         if self.configfile is False:
             if arguments["--configfile"]:
                 self.snakemake = self.snakemake + " --configfile={}".format(arguments["--configfile"])
+                configfile=arguments["--configfile"]
             else:
                 self.snakemake = self.snakemake + " --configfile={}".format(cellsnake_path + "/scrna/config.yaml")
+                configfile=cellsnake_path + "/scrna/config.yaml"
+
+            with open(configfile) as f:
+                self.paramaters=yaml.load(f,Loader=SafeLoader)
             self.configfile=True
+        self.change_paramaters(arguments)
+
+    def change_paramaters(self,arguments):
+        if self.configfile is True:
+            self.paramaters["resolution"] = arguments["--resolution"]
+            self.paramaters["percent_mt"] = arguments["--percent_mt"]
+            self.paramaters["species"] = arguments["--species"]
+
+
+
+
+        
 
     def prepare_arguments(self,arguments):
         self.snakemake = self.snakemake +  " -j {} ".format(arguments['--jobs']) #set CPU number
         self.snakemake = self.snakemake +  " -s {} ".format(f"{cellsnake_path}/scrna/workflow/Snakefile") #set Snakefile location
-        self.add_configfile_argument(arguments)
+        self.load_and_add_default_configfile_argument(arguments)
         self.config.append("datafolder={}".format(arguments['<INPUT>']))
         self.config.append(f"cellsnake_path={cellsnake_path}/scrna/")
+        self.config.append("resolution={}".format(arguments["--resolution"]))
+        self.config.append("percent_mt={}".format(arguments["--percent_mt"]))
+        self.config.append("species={}".format(arguments["--species"]))
 
         if arguments["--only-clustree"]:
             self.config.append("route=clustree")
-            self.add_configs()
+            self.add_config_argument()
             return
         
-
         if arguments["--dry"]:
             self.snakemake = self.snakemake + " -n "
         if arguments["--unlock"]:
             self.snakemake = self.snakemake + " --unlock "
         
-        self.add_configs()
+        self.add_config_argument()
         
     
     def write_to_log(self):
         filename = "_".join(["cellsnake",self.runid, datetime.datetime.now().strftime("%y%m%d_%H%M%S"),"runlog"])
         with open(filename,"w") as f:
             f.write(self.snakemake + "\n")
+            f.write(self.paramaters + "\n")
+
 
 
 
 
 def run_cellsnake(arguments):
     snakemake_argument=CommandLine()
+    if snakemake_argument.check_arguments(arguments) is False:
+        return
+    if arguments["--seurat-integration"]:
+        integration_argument=CommandLine()
+        
+
+        
+        
+
+
     snakemake_argument.prepare_arguments(arguments)
     subprocess.check_call(str(snakemake_argument),shell=True)
     snakemake_argument.write_to_log()
