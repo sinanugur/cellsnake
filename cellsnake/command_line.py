@@ -170,7 +170,7 @@ class CommandLine:
         with open(filename,"w") as f:
             f.write(str(self.snakemake) + "\n")
             f.write(str(self.paramaters) + "\n")
-            f.write("Total run time: {t:.2f} mins \n".format(t=(stop-start/60)))
+            f.write("Total run time: {t:.2f} mins \n".format(t=(stop-start)/60))
 
 
 
