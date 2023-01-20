@@ -16,7 +16,8 @@ import subprocess
 import shutil
 import datetime
 import random
-from fuzzywuzzy import fuzz
+#from fuzzywuzzy import fuzz
+import timeit
 import errno
 import os
 import yaml
@@ -163,11 +164,14 @@ class CommandLine:
         self.add_config_argument()
         
     
-    def write_to_log(self):
+    def write_to_log(self,start):
         filename = "_".join(["cellsnake",self.runid, datetime.datetime.now().strftime("%y%m%d_%H%M%S"),"runlog"])
+        stop = timeit.default_timer()
         with open(filename,"w") as f:
             f.write(str(self.snakemake) + "\n")
             f.write(str(self.paramaters) + "\n")
+            f.write("Total run time: {t:.2f} mins \n".format(t=(stop-start/60)))
+
 
 
 
@@ -186,8 +190,9 @@ def run_cellsnake(arguments):
 
 
     snakemake_argument.prepare_arguments(arguments)
+    start = timeit.default_timer()
     subprocess.check_call(str(snakemake_argument),shell=True)
-    snakemake_argument.write_to_log()
+    snakemake_argument.write_to_log(start)
 
 
 """
