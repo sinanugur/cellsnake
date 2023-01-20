@@ -59,7 +59,8 @@ __doc__=f"""Main cellsnake executable, version: {__version__}
 
 Usage:
     cellsnake <INPUT> [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
-    cellsnake <INPUT> [--only-clustree] [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--dry]
+    cellsnake <INPUT> --only-clustree [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--dry]
+    cellsnake <INPUT> --minimal [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
     cellsnake (--seurat-integration|--harmony-integration) [--resolution <text>]  [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
     cellsnake <INPUT> [--unlock|--remove] [--dry]
     cellsnake --generate-configfile-template
@@ -80,6 +81,7 @@ Options:
     --generate-configfile-template     Generate config file template in the current directory.
     --seurat-integration               Use Seurat integration, run inside a "cellsnake" folder after regular workflow successfully concludes for multiple samples.
     --harmony-integration              Use Harmony integration, run inside a "cellsnake" folder after regular workflow successfully concludes for multiple samples.
+    --minimal                          Minimal pipeline, will skip marker analysis. Better to use for later integration.
     -u, --unlock                       Rescue stalled jobs (Try this if the previous job ended prematurely).
     -r, --remove                       Clear all output files (this won't remove input files).
     -d, --dry                          Dry run, nothing will be generated.
@@ -151,9 +153,8 @@ class CommandLine:
 
         if arguments["--only-clustree"]:
             self.config.append("route=clustree")
-            self.add_config_argument()
-            return
-        
+        elif arguments["--minimal"]:
+            self.config.append("route=minimal")
         if arguments["--dry"]:
             self.snakemake = self.snakemake + " -n "
         if arguments["--unlock"]:
