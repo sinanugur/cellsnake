@@ -60,7 +60,7 @@ __doc__=f"""Main cellsnake executable, version: {__version__}
 Usage:
     cellsnake <INPUT> [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
     cellsnake <INPUT> [--only-clustree] [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--dry]
-    cellsnake --seurat-integration [--resolution <text>]  [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
+    cellsnake (--seurat-integration|--harmony-integration) [--resolution <text>]  [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
     cellsnake <INPUT> [--unlock|--remove] [--dry]
     cellsnake --generate-configfile-template
     cellsnake (-h | --help)
@@ -73,11 +73,13 @@ Arguments:
     --percent_mt <text>                     Maximum mitochondrial gene percentage cutoff, for example 5 or 10 [default: auto]. NA for integration.
     -j <integer>, --jobs <integer>          Total CPUs. [default: 2]
     --species <text>                        Species: human or mouse [default: human] 
+    --gene <text>                           Create publication ready plots for a selected gene. You need an RDS file from the main pipeline.
 
 Options:
     --only-clustree                    Generate only clustree plot (see github.com/lazappi/clustree).
     --generate-configfile-template     Generate config file template in the current directory.
-    --seurat-integration               Use Seurat integration, run inside "cellsnake" folder after regular workflow successfully concludes.
+    --seurat-integration               Use Seurat integration, run inside a "cellsnake" folder after regular workflow successfully concludes for multiple samples.
+    --harmony-integration              Use Harmony integration, run inside a "cellsnake" folder after regular workflow successfully concludes for multiple samples.
     -u, --unlock                       Rescue stalled jobs (Try this if the previous job ended prematurely).
     -r, --remove                       Clear all output files (this won't remove input files).
     -d, --dry                          Dry run, nothing will be generated.
@@ -163,8 +165,8 @@ class CommandLine:
     def write_to_log(self):
         filename = "_".join(["cellsnake",self.runid, datetime.datetime.now().strftime("%y%m%d_%H%M%S"),"runlog"])
         with open(filename,"w") as f:
-            f.write(self.snakemake + "\n")
-            f.write(self.paramaters + "\n")
+            f.write(str(self.snakemake) + "\n")
+            f.write(str(self.paramaters) + "\n")
 
 
 
