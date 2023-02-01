@@ -62,7 +62,7 @@ Usage:
     cellsnake <INPUT> [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
     cellsnake <INPUT> --only-clustree [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--dry]
     cellsnake <INPUT> --minimal [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
-    cellsnake (--seurat-integration|--harmony-integration) [--resolution <text>]  [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
+    cellsnake --seurat-integration [--resolution <text>]  [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
     cellsnake <INPUT> [--unlock|--remove] [--dry]
     cellsnake --generate-configfile-template
     cellsnake (-h | --help)
@@ -81,7 +81,6 @@ Options:
     --only-clustree                    Generate only clustree plot (see github.com/lazappi/clustree).
     --generate-configfile-template     Generate config file template in the current directory.
     --seurat-integration               Use Seurat integration, run inside a "cellsnake" folder after regular workflow successfully concludes for multiple samples.
-    --harmony-integration              Use Harmony integration, run inside a "cellsnake" folder after regular workflow successfully concludes for multiple samples.
     --minimal                          Minimal pipeline, will skip marker analysis. Better to use for later integration.
     -u, --unlock                       Rescue stalled jobs (Try this if the previous job ended prematurely).
     -r, --remove                       Clear all output files (this won't remove input files).
@@ -98,6 +97,8 @@ class CommandLine:
         self.runid="".join(random.choices("abcdefghisz",k=3) + random.choices("123456789",k=5))
         self.config=[]
         self.configfile=False
+        self.is_integrated_sample=False
+        self.is_this_an_integration_run=False
         self.paramaters=dict()
         
     def __str__(self):
@@ -106,7 +107,7 @@ class CommandLine:
         return self.snakemake
     
     def check_arguments(self,arguments):
-        if not os.path.exists(arguments["<INPUT>"]):
+        if not os.path.exists(arguments["<INPUT>"]) and self.is_this_an_integration_run is False:
             print("File or directory not found:",arguments["<INPUT>"])
             return False
 
@@ -146,16 +147,23 @@ class CommandLine:
         self.snakemake = self.snakemake +  " -j {} ".format(arguments['--jobs']) #set CPU number
         self.snakemake = self.snakemake +  " -s {} ".format(f"{cellsnake_path}/scrna/workflow/Snakefile") #set Snakefile location
         self.load_and_add_default_configfile_argument(arguments)
-        self.config.append("datafolder={}".format(arguments['<INPUT>']))
+        if self.is_this_an_integration_run is False and self.is_integrated_sample is False:
+            self.config.append("datafolder={}".format(arguments['<INPUT>']))
+
         self.config.append(f"cellsnake_path={cellsnake_path}/scrna/")
         self.config.append("resolution={}".format(arguments["--resolution"]))
         self.config.append("percent_mt={}".format(arguments["--percent_mt"]))
         self.config.append("species={}".format(arguments["--species"]))
+        if self.is_integrated_sample:
+            self.config.append("is_integrated_sample={}".format("True"))
+
 
         if arguments["--only-clustree"]:
             self.config.append("route=clustree")
         elif arguments["--minimal"]:
             self.config.append("route=minimal")
+        elif self.is_this_an_integration_run:
+            self.config.append("route=integration")
         if arguments["--dry"]:
             self.snakemake = self.snakemake + " -n "
         if arguments["--unlock"]:
@@ -168,7 +176,8 @@ class CommandLine:
         filename = "_".join(["cellsnake",self.runid, datetime.datetime.now().strftime("%y%m%d_%H%M%S"),"runlog"])
         stop = timeit.default_timer()
         with open(filename,"w") as f:
-            f.write(str(self.snakemake) + "\n")
+            f.write("Cellsnake command line arguments: " + " ".join(str(sys.argv)) + "\n")
+            f.write("Snakemake workflow arguments: " + str(self.snakemake) + "\n")
             f.write(str(self.paramaters) + "\n")
             f.write("Total run time: {t:.2f} mins \n".format(t=(stop-start)/60))
 
@@ -178,19 +187,26 @@ class CommandLine:
 
 
 def run_cellsnake(arguments):
-    snakemake_argument=CommandLine()
-    if snakemake_argument.check_arguments(arguments) is False:
-        return
-    if arguments["--seurat-integration"]:
-        integration_argument=CommandLine()
-        
-
-        
-        
-
-
-    snakemake_argument.prepare_arguments(arguments)
     start = timeit.default_timer()
+    snakemake_argument=CommandLine()
+    #if snakemake_argument.check_arguments(arguments) is False:
+    #    return
+    
+    
+
+    if arguments["--seurat-integration"]:
+        snakemake_argument.is_this_an_integration_run = True
+        snakemake_argument.prepare_arguments(arguments)
+        #print (str(snakemake_argument))
+        subprocess.check_call(str(snakemake_argument),shell=True)
+        snakemake_argument=CommandLine()
+        snakemake_argument.is_this_an_integration_run = False
+        snakemake_argument.is_integrated_sample = True
+        snakemake_argument.config.append("datafolder=analyses_integrated/seurat/combined.rds")
+    
+    snakemake_argument.prepare_arguments(arguments)
+    
+    #print (str(snakemake_argument))
     subprocess.check_call(str(snakemake_argument),shell=True)
     snakemake_argument.write_to_log(start)
 
