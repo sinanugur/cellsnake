@@ -38,7 +38,7 @@ __version__= '0.1.0'
 
 __licence__="""
 MIT License
-Copyright (c) 2022 Sinan Ugur Umu (SUU) sinanugur@gmail.com
+Copyright (c) 2022 Sinan U. Umu (SUU) sinanugur@gmail.com
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -59,31 +59,28 @@ SOFTWARE.
 __doc__=f"""Main cellsnake executable, version: {__version__}
 
 Usage:
-    cellsnake <INPUT> [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
-    cellsnake <INPUT> --only-clustree [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--dry]
-    cellsnake <INPUT> --minimal [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
-    cellsnake --seurat-integration [--resolution <text>]  [--configfile <text>] [--jobs <integer>] [--species <text>] [--dry]
+    cellsnake <INPUT> [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--option <text>]... [--release-the-kraken <text>] [--taxa <text>] [--dry]
     cellsnake <INPUT> [--unlock|--remove] [--dry]
     cellsnake --generate-configfile-template
     cellsnake (-h | --help)
     cellsnake --version
+    cellsnake --init
 
 Arguments:
     INPUT                                   Input directory or a file to process (if a directory given, batch mode is ON).
     -c <test>, --configfile <text>          Config file name (if not supplied, it will use default settings, you may generate a template, change it and use it in your runs).
     --resolution <text>                     Resolution for cluster detection, write "auto" for auto detection [default: 0.8].
     --percent_mt <text>                     Maximum mitochondrial gene percentage cutoff, for example 5 or 10 [default: auto]. NA for integration.
-    -j <integer>, --jobs <integer>          Total CPUs. [default: 2]
-    --species <text>                        Species: human or mouse [default: human] 
     --gene <text>                           Create publication ready plots for a selected gene. You need an RDS file from the main pipeline.
+    --option <text>                         Cellsnake run options: minimal, standard, clustree, integration [default: standard].
+    --release-the-kraken <text>             Kraken database folder.
+    --taxa <text>                           Microbiome taxonomic level: genus, kingdom, phylum, genus [default: genus]
+    -j <integer>, --jobs <integer>          Total CPUs. [default: 2]
 
 Options:
-    --only-clustree                    Generate only clustree plot (see github.com/lazappi/clustree).
     --generate-configfile-template     Generate config file template in the current directory.
-    --seurat-integration               Use Seurat integration, run inside a "cellsnake" folder after regular workflow successfully concludes for multiple samples.
-    --minimal                          Minimal pipeline, will skip marker analysis. Better to use for later integration.
-    -u, --unlock                       Rescue stalled jobs (Try this if the previous job ended prematurely).
-    -r, --remove                       Clear all output files (this won't remove input files).
+    -u, --unlock                       Rescue stalled jobs (Try this if the previous job ended prematurely or currently failing).
+    -r, --remove                       Delete all output files (this won't affect input files).
     -d, --dry                          Dry run, nothing will be generated.
     -h, --help                         Show this screen.
     --version                          Show version.
@@ -136,7 +133,7 @@ class CommandLine:
         if self.configfile is True:
             self.paramaters["resolution"] = arguments["--resolution"]
             self.paramaters["percent_mt"] = arguments["--percent_mt"]
-            self.paramaters["species"] = arguments["--species"]
+            #self.paramaters["species"] = arguments["--species"]
 
 
 
@@ -153,17 +150,24 @@ class CommandLine:
         self.config.append(f"cellsnake_path={cellsnake_path}/scrna/")
         self.config.append("resolution={}".format(arguments["--resolution"]))
         self.config.append("percent_mt={}".format(arguments["--percent_mt"]))
-        self.config.append("species={}".format(arguments["--species"]))
+        #self.config.append("species={}".format(arguments["--species"]))
+        self.config.append("taxa={}".format(arguments["--taxa"]))
+        self.config.append("runid={}".format(self.runid))
+
+        if arguments["--release-the-kraken"]:
+            self.config.append("kraken_db_folder={}".format(arguments["--release-the-kraken"]))
+            
+
         if self.is_integrated_sample:
             self.config.append("is_integrated_sample={}".format("True"))
 
 
-        if arguments["--only-clustree"]:
-            self.config.append("route=clustree")
-        elif arguments["--minimal"]:
-            self.config.append("route=minimal")
+        if "clustree" in arguments["--option"] and self.is_this_an_integration_run is False:
+            self.config.append("option=clustree")
+        elif "minimal" in arguments["--option"] and self.is_this_an_integration_run is False:
+            self.config.append("option=minimal")
         elif self.is_this_an_integration_run:
-            self.config.append("route=integration")
+            self.config.append("option=integration")
         if arguments["--dry"]:
             self.snakemake = self.snakemake + " -n "
         if arguments["--unlock"]:
@@ -173,12 +177,15 @@ class CommandLine:
         
     
     def write_to_log(self,start):
-        filename = "_".join(["cellsnake",self.runid, datetime.datetime.now().strftime("%y%m%d_%H%M%S"),"runlog"])
+        logname = "_".join(["cellsnake",self.runid, datetime.datetime.now().strftime("%y%m%d_%H%M%S"),"runlog"])
         stop = timeit.default_timer()
-        with open(filename,"w") as f:
-            f.write("Cellsnake command line arguments: " + " ".join(str(sys.argv)) + "\n")
-            f.write("Snakemake workflow arguments: " + str(self.snakemake) + "\n")
-            f.write(str(self.paramaters) + "\n")
+        with open(logname,"w") as f:
+            f.write("Run ID : " + self.runid + "\n")
+            f.write("Cellsnake arguments : " + " ".join(sys.argv) + "\n\n")
+            f.write("------------------------------" + "\n")
+            f.write("Snakemake arguments : " + str(self.snakemake) + "\n\n")
+            f.write("------------------------------" + "\n")
+            f.write("Run paramaters: " + str(self.paramaters) + "\n\n")
             f.write("Total run time: {t:.2f} mins \n".format(t=(stop-start)/60))
 
 
@@ -188,52 +195,37 @@ class CommandLine:
 
 def run_cellsnake(arguments):
     start = timeit.default_timer()
-    snakemake_argument=CommandLine()
-    #if snakemake_argument.check_arguments(arguments) is False:
-    #    return
-    
     
 
-    if arguments["--seurat-integration"]:
-        snakemake_argument.is_this_an_integration_run = True
-        snakemake_argument.prepare_arguments(arguments)
-        #print (str(snakemake_argument))
-        subprocess.check_call(str(snakemake_argument),shell=True)
+    
+
+    if  "integration" in arguments["--option"]:
+        snakemake_argument=run_integration(arguments)
+    
+    else:
         snakemake_argument=CommandLine()
-        snakemake_argument.is_this_an_integration_run = False
-        snakemake_argument.is_integrated_sample = True
-        snakemake_argument.config.append("datafolder=analyses_integrated/seurat/combined.rds")
+        snakemake_argument.prepare_arguments(arguments)
+        subprocess.check_call(str(snakemake_argument),shell=True)
     
-    snakemake_argument.prepare_arguments(arguments)
-    
-    #print (str(snakemake_argument))
-    subprocess.check_call(str(snakemake_argument),shell=True)
+        
     snakemake_argument.write_to_log(start)
 
 
-"""
-def run_cellsnake(arguments):
-    params="'{p}'".format(p=" ".join(sys.argv))
-
-    dry_run="-n" if arguments["--dry"] else ""
-    unlock="--unlock" if arguments["--unlock"] else ""
-    configfile=arguments['--configfile'] if arguments['--configfile'] else cellsnake_path + "/scrna/config.yaml"
-    remove="--delete-all-output" if arguments["--remove"] else ""
-    clustree="route=clustree" if arguments["--only-clustree"] else ""
-
-
-    snakemake_argument="snakemake --rerun-incomplete {dry} {unlock} {remove} -j {jobs} -s {cellsnake_path}workflow/Snakefile --config cellsnake_path={cellsnake_path} {clustree} --configfile={configfile}".format(
-    jobs=arguments['--jobs'],
-    configfile=configfile,
-    cellsnake_path=cellsnake_path + "/scrna/",
-    dry=dry_run,
-    clustree=clustree,
-    unlock=unlock,
-    remove=remove,
-    params=params)
-    
-    subprocess.check_call(snakemake_argument,shell=True)
-"""
+def run_integration(arguments):
+    snakemake_argument=CommandLine()
+    snakemake_argument.is_this_an_integration_run = True
+    snakemake_argument.prepare_arguments(arguments)
+    print("------------------------------------------------\n")
+    print("Now running Seurat integration analysis for samples:")
+    subprocess.check_call(str(snakemake_argument),shell=True)
+    snakemake_argument=CommandLine()
+    snakemake_argument.is_this_an_integration_run = False
+    snakemake_argument.is_integrated_sample = True
+    snakemake_argument.config.append("datafolder=analyses_integrated/seurat/combined.rds")
+    snakemake_argument.prepare_arguments(arguments)
+    print("Integration has been concluded, now the rest of the analysis will start.")
+    subprocess.check_call(str(snakemake_argument),shell=True)
+    return snakemake_argument
 
 
 def main():
