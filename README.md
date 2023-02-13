@@ -5,7 +5,7 @@ A command line tool for scalable single cell analysis
 Installation
 ------------
 
-;ethod for installing directly from the GitHub repo:
+Method for installing directly from the GitHub repo:
 ```
 git clone https://github.com/sinanugur/cellsnake.git
 cd cellsnake
