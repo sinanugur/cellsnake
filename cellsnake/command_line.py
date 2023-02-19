@@ -30,6 +30,7 @@ from collections import defaultdict
 
 import cellsnake
 cellsnake_path=os.path.dirname(cellsnake.__file__)
+options = ["clustree","clusteringTree","minimal","standard","advanced"] #and integration
 
 
 __author__ = 'Sinan U. Umu'
@@ -59,7 +60,7 @@ SOFTWARE.
 __doc__=f"""Main cellsnake executable, version: {__version__}
 
 Usage:
-    cellsnake <INPUT> [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--jobs <integer>] [--option <text>]... [--release-the-kraken <text>] [--taxa <text>] [--dry]
+    cellsnake <INPUT> [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--gene <text>] [--jobs <integer>] [--option <text>]... [--release-the-kraken <text>] [--taxa <text>] [--dry]
     cellsnake <INPUT> [--unlock|--remove] [--dry]
     cellsnake --generate-configfile-template
     cellsnake (-h | --help)
@@ -70,11 +71,11 @@ Arguments:
     INPUT                                   Input directory or a file to process (if a directory given, batch mode is ON).
     -c <test>, --configfile <text>          Config file name (if not supplied, it will use default settings, you may generate a template, change it and use it in your runs).
     --resolution <text>                     Resolution for cluster detection, write "auto" for auto detection [default: 0.8].
-    --percent_mt <text>                     Maximum mitochondrial gene percentage cutoff, for example 5 or 10 [default: auto]. NA for integration.
-    --gene <text>                           Create publication ready plots for a selected gene. You need an RDS file from the main pipeline.
-    --option <text>                         Cellsnake run options: minimal, standard, clustree, integration [default: standard].
+    --percent_mt <text>                     Maximum mitochondrial gene percentage cutoff, for example, 5 or 10, write "auto" for auto detection [default: 10].
+    --gene <text>                           Create publication ready plots for a gene or a list of genes from a text file.
+    --option <text>                         cellsnake run options: minimal, standard, clustree, integration, advanced [default: standard].
     --release-the-kraken <text>             Kraken database folder.
-    --taxa <text>                           Microbiome taxonomic level: genus, kingdom, phylum, genus [default: genus]
+    --taxa <text>                           Microbiome taxonomic level collapse to genus, kingdom, phylum, genus [default: genus]
     -j <integer>, --jobs <integer>          Total CPUs. [default: 2]
 
 Options:
@@ -96,7 +97,7 @@ class CommandLine:
         self.configfile=False
         self.is_integrated_sample=False
         self.is_this_an_integration_run=False
-        self.paramaters=dict()
+        self.parameters=dict()
         
     def __str__(self):
         return self.snakemake
@@ -125,15 +126,15 @@ class CommandLine:
                 configfile=cellsnake_path + "/scrna/config.yaml"
 
             with open(configfile) as f:
-                self.paramaters=yaml.load(f,Loader=SafeLoader)
+                self.parameters=yaml.load(f,Loader=SafeLoader)
             self.configfile=True
-        self.change_paramaters(arguments)
+        self.change_parameters(arguments)
 
-    def change_paramaters(self,arguments):
+    def change_parameters(self,arguments):
         if self.configfile is True:
-            self.paramaters["resolution"] = arguments["--resolution"]
-            self.paramaters["percent_mt"] = arguments["--percent_mt"]
-            #self.paramaters["species"] = arguments["--species"]
+            self.parameters["resolution"] = arguments["--resolution"]
+            self.parameters["percent_mt"] = arguments["--percent_mt"]
+            #self.parameters["species"] = arguments["--species"]
 
 
 
@@ -153,6 +154,11 @@ class CommandLine:
         #self.config.append("species={}".format(arguments["--species"]))
         self.config.append("taxa={}".format(arguments["--taxa"]))
         self.config.append("runid={}".format(self.runid))
+        if arguments["--gene"]:
+            if os.path.isfile(arguments["--gene"]):
+                self.config.append("selected_gene_file={}".format(arguments["--gene"]))
+            else:
+                self.config.append("gene_to_plot={}".format(arguments["--gene"]))
 
         if arguments["--release-the-kraken"]:
             self.config.append("kraken_db_folder={}".format(arguments["--release-the-kraken"]))
@@ -162,10 +168,9 @@ class CommandLine:
             self.config.append("is_integrated_sample={}".format("True"))
 
 
-        if "clustree" in arguments["--option"] and self.is_this_an_integration_run is False:
-            self.config.append("option=clustree")
-        elif "minimal" in arguments["--option"] and self.is_this_an_integration_run is False:
-            self.config.append("option=minimal")
+        if any(x for x in arguments["--option"] if x in options) and self.is_this_an_integration_run is False:
+            self.config.append("option={}".format(arguments["--option"][0]))
+         
         elif self.is_this_an_integration_run:
             self.config.append("option=integration")
         if arguments["--dry"]:
@@ -185,7 +190,7 @@ class CommandLine:
             f.write("------------------------------" + "\n")
             f.write("Snakemake arguments : " + str(self.snakemake) + "\n\n")
             f.write("------------------------------" + "\n")
-            f.write("Run paramaters: " + str(self.paramaters) + "\n\n")
+            f.write("Run parameters: " + str(self.parameters) + "\n\n")
             f.write("Total run time: {t:.2f} mins \n".format(t=(stop-start)/60))
 
 
@@ -195,44 +200,49 @@ class CommandLine:
 
 def run_cellsnake(arguments):
     start = timeit.default_timer()
-    
-
-    
-
     if  "integration" in arguments["--option"]:
-        snakemake_argument=run_integration(arguments)
-    
+        try:
+            snakemake_argument=run_integration(arguments)
+            snakemake_argument.write_to_log(start)
+        except:
+            snakemake_argument=run_workflow(arguments,option="minimal")
+            snakemake_argument.write_to_log(start)
+            snakemake_argument=run_integration(arguments)
+            snakemake_argument.write_to_log(start)
     else:
-        snakemake_argument=CommandLine()
-        snakemake_argument.prepare_arguments(arguments)
-        subprocess.check_call(str(snakemake_argument),shell=True)
-    
-        
-    snakemake_argument.write_to_log(start)
+        snakemake_argument=run_workflow(arguments)
+        snakemake_argument.write_to_log(start)
 
 
 def run_integration(arguments):
     snakemake_argument=CommandLine()
     snakemake_argument.is_this_an_integration_run = True
     snakemake_argument.prepare_arguments(arguments)
-    print("------------------------------------------------\n")
-    print("Now running Seurat integration analysis for samples:")
     subprocess.check_call(str(snakemake_argument),shell=True)
+
     snakemake_argument=CommandLine()
     snakemake_argument.is_this_an_integration_run = False
     snakemake_argument.is_integrated_sample = True
-    snakemake_argument.config.append("datafolder=analyses_integrated/seurat/combined.rds")
+    snakemake_argument.config.append("datafolder=analyses_integrated/seurat/integrated.rds")
+    arguments["--option"].remove("integration")
     snakemake_argument.prepare_arguments(arguments)
-    print("Integration has been concluded, now the rest of the analysis will start.")
+    subprocess.check_call(str(snakemake_argument),shell=True)
+    return snakemake_argument
+
+def run_workflow(arguments,option=None):
+    snakemake_argument=CommandLine()
+    if option is not None:
+        arguments["--option"]=option
+    snakemake_argument.prepare_arguments(arguments)
     subprocess.check_call(str(snakemake_argument),shell=True)
     return snakemake_argument
 
 
 def main():
-        arguments = docopt(__doc__, version=__version__)
-        if arguments["--generate-configfile-template"]:
+        cli_arguments = docopt(__doc__, version=__version__)
+        if cli_arguments["--generate-configfile-template"]:
             print("Generating config.yaml file...")
             print("You can use this as a template for a cellsnake run. You may change the settings.")
             shutil.copyfile(cellsnake_path + "/scrna/config.yaml", 'config.yaml')
-            return
-        run_cellsnake(arguments)
+        else:
+            run_cellsnake(arguments=cli_arguments)
