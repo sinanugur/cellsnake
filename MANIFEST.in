@@ -2,6 +2,7 @@ include *.txt
 include Snakefile
 recursive-include cellsnake *.R
 recursive-include cellsnake *.py
+recursive-include cellsnake *.sh
 recursive-include cellsnake *.smk
 recursive-include cellsnake Snakefile
 recursive-include cellsnake config.yaml

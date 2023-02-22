@@ -60,26 +60,28 @@ SOFTWARE.
 __doc__=f"""Main cellsnake executable, version: {__version__}
 
 Usage:
-    cellsnake <INPUT> [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--gene <text>] [--jobs <integer>] [--option <text>]... [--release-the-kraken <text>] [--taxa <text>] [--dry]
+    cellsnake <INPUT> [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--gene <text>] [--jobs <integer>] [--option <text>]... [--release-the-kraken <text>] [--taxa <text>] [--unlock|--remove] [--dry]
     cellsnake <INPUT> [--unlock|--remove] [--dry]
-    cellsnake --generate-configfile-template
+    cellsnake --generate-template
+    cellsnake --install-packages
     cellsnake (-h | --help)
     cellsnake --version
     cellsnake --init
 
 Arguments:
     INPUT                                   Input directory or a file to process (if a directory given, batch mode is ON).
-    -c <test>, --configfile <text>          Config file name (if not supplied, it will use default settings, you may generate a template, change it and use it in your runs).
+    -c <text>, --configfile <text>          Config file name (if not supplied, it will use default settings, you may generate a template, change it and use it in your runs).
     --resolution <text>                     Resolution for cluster detection, write "auto" for auto detection [default: 0.8].
     --percent_mt <text>                     Maximum mitochondrial gene percentage cutoff, for example, 5 or 10, write "auto" for auto detection [default: 10].
     --gene <text>                           Create publication ready plots for a gene or a list of genes from a text file.
-    --option <text>                         cellsnake run options: minimal, standard, clustree, integration, advanced [default: standard].
+    --option <text>                         cellsnake run options: "minimal", "standard", "clustree", "advanced" [default: standard]. "integration" is to integrate and run on integrated samples.
     --release-the-kraken <text>             Kraken database folder.
-    --taxa <text>                           Microbiome taxonomic level collapse to genus, kingdom, phylum, genus [default: genus]
+    --taxa <text>                           Microbiome taxonomic level collapse to "domain", "kingdom", "phylum", "class", "order", "family", "genus", "species" [default: genus]
     -j <integer>, --jobs <integer>          Total CPUs. [default: 2]
 
 Options:
-    --generate-configfile-template     Generate config file template in the current directory.
+    --generate-template                Generate config file template in the current directory.
+    --install-packages                 Install, reinstall or check required R packages.
     -u, --unlock                       Rescue stalled jobs (Try this if the previous job ended prematurely or currently failing).
     -r, --remove                       Delete all output files (this won't affect input files).
     -d, --dry                          Dry run, nothing will be generated.
@@ -89,9 +91,39 @@ Options:
 """
 
 
+def check_command_line_arguments(arguments):
+    if not os.path.exists(arguments["<INPUT>"]):
+        print("File or input directory not found : ",arguments["<INPUT>"])
+        return False
+    if arguments["--configfile"]:
+         if not os.path.isfile(arguments["--configfile"]):
+            print("Config file given not found : ",arguments["--configfile"])
+            return False
+    if [o for o in arguments["--option"] if o not in ["minimal", "standard", "clustree", "integration", "advanced"]]:
+        print("Select a correct option for analyses : ",arguments["--option"])
+        print("Possible options : ",["minimal", "standard", "clustree", "advanced","integration"])
+        print("You may combine integration with others so the integrated sample will be processed accordingly.")
+        print("The default is : standard ")
+        return False
+    elif len(arguments["--option"]) > 1 and [o for o in arguments["--option"] if o in ["minimal", "standard", "clustree", "advanced"]]:
+        print(arguments["--option"])
+        print("You cannot combine two options, except integration, choose one of these : ",["minimal", "standard", "clustree", "advanced"])
+        return False
+
+    if arguments["--release-the-kraken"] and not os.path.exists(arguments["--release-the-kraken"]):
+        print("KrakenDB directory not found : ",arguments["--release-the-kraken"])
+        print("You should download a proper DB from this link (https://benlangmead.github.io/aws-indexes/k2), unpack it and point that directory.")
+        return False
+    if arguments["--taxa"] not in ["domain", "kingdom", "phylum", "class", "order", "family", "genus", "species"]:
+        print("Select a correct taxa level for microbiome analysis:",arguments["--taxa"])
+        print("Possible options : ",["domain", "kingdom", "phylum", "class", "order", "family", "genus", "species"])
+        return False
+    return True
+
+
 class CommandLine:
     def __init__(self):
-        self.snakemake="snakemake --rerun-incomplete"
+        self.snakemake="snakemake --rerun-incomplete -k "
         self.runid="".join(random.choices("abcdefghisz",k=3) + random.choices("123456789",k=5))
         self.config=[]
         self.configfile=False
@@ -104,10 +136,7 @@ class CommandLine:
     def __repr__(self):
         return self.snakemake
     
-    def check_arguments(self,arguments):
-        if not os.path.exists(arguments["<INPUT>"]) and self.is_this_an_integration_run is False:
-            print("File or directory not found:",arguments["<INPUT>"])
-            return False
+
 
 
         
@@ -205,26 +234,39 @@ def run_cellsnake(arguments):
             snakemake_argument=run_integration(arguments)
             snakemake_argument.write_to_log(start)
         except:
-            snakemake_argument=run_workflow(arguments,option="minimal")
-            snakemake_argument.write_to_log(start)
-            snakemake_argument=run_integration(arguments)
-            snakemake_argument.write_to_log(start)
+            pass
+            """
+            if not arguments["--dry"]:
+                print(arguments)
+                snakemake_argument=run_workflow(arguments,option=["minimal"])
+                print(arguments)
+                snakemake_argument.write_to_log(start)
+                snakemake_argument=run_integration(arguments)
+                snakemake_argument.write_to_log(start)
+            """
+
     else:
         snakemake_argument=run_workflow(arguments)
         snakemake_argument.write_to_log(start)
 
 
 def run_integration(arguments):
+
+    #first run integration
     snakemake_argument=CommandLine()
     snakemake_argument.is_this_an_integration_run = True
     snakemake_argument.prepare_arguments(arguments)
     subprocess.check_call(str(snakemake_argument),shell=True)
 
+    #then run workflow on integrated dataset
     snakemake_argument=CommandLine()
     snakemake_argument.is_this_an_integration_run = False
     snakemake_argument.is_integrated_sample = True
     snakemake_argument.config.append("datafolder=analyses_integrated/seurat/integrated.rds")
-    arguments["--option"].remove("integration")
+    try:
+        arguments["--option"].remove("integration")
+    except:
+        pass
     snakemake_argument.prepare_arguments(arguments)
     subprocess.check_call(str(snakemake_argument),shell=True)
     return snakemake_argument
@@ -240,9 +282,16 @@ def run_workflow(arguments,option=None):
 
 def main():
         cli_arguments = docopt(__doc__, version=__version__)
-        if cli_arguments["--generate-configfile-template"]:
+        if cli_arguments["--generate-template"]:
             print("Generating config.yaml file...")
             print("You can use this as a template for a cellsnake run. You may change the settings.")
             shutil.copyfile(cellsnake_path + "/scrna/config.yaml", 'config.yaml')
+            return
+        if cli_arguments["--install-packages"]:
+            subprocess.check_call(cellsnake_path + "/scrna/workflow/scripts/scrna-install-packages.R")
+            return
         else:
-            run_cellsnake(arguments=cli_arguments)
+            if check_command_line_arguments(cli_arguments) is False:
+                return    
+            else:
+                run_cellsnake(arguments=cli_arguments)

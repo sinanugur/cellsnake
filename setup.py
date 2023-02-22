@@ -39,7 +39,7 @@ setup(
     author="Sinan U. Umu",
     author_email="sinanugur@gmail.com",
     description="cellsnake",
-    keywords="RNA miRNA detection prediction",
+    keywords="scRNA single cell analysis",
         cmdclass={
         'clean': CleanCommand,
     },

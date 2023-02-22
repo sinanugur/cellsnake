@@ -1,6 +1,6 @@
 # cellsnake
 
-A command line tool for scalable single cell analysis
+A command line tool for easy and scalable single cell analysis
 
 Installation
 ------------
@@ -12,22 +12,42 @@ cd cellsnake
 pip install .
 ```
 
-Check if the installation works by calling the main script.  
+Check if the installation works by calling the main script:  
 ```
 cellsnake --help
 ```
+then install and check if all the R packages are installed by typing:
 
-Note: You have to install dependencies if you prefer Github installation.  
+```
+cellsnake --install-packages
+
+You should see this message if all the packages are available:
+[1] "All packages were installed...OK"
+```
+
+
+Note: You have to install dependencies if you prefer Github installation. We strongly recommend Bioconda, `--install-packages` argument must be called to check if the R packages are available. 
 
 Quick start example
 -------------------
-Create a new directory and run cellsnake there after the installation. cellsnake will create the required directories while running. You may download publicly available fetal brain dataset to test your cellsnake installation.
+Run `cellsnake` in a clean directory and `cellsnake` will create the required directories while running. You may download publicly available fetal brain dataset to test your `cellsnake` installation. The link is here.
 
+After downloading the dataset, just point the data folder which contains the two dataset folders, this will trigger a standard cellsnake workflow:
 ```
-cellsnake data --percent_mt 10 
+cellsnake data
 ```
 
-See our documentation for detailed explanations: https://cellsnake.readthedocs.io/
+After the pipeline finishes, you may integrate these two samples:
+```
+cellsnake data --option integration
+```
+
+You can also run the full pipeline on the integrated dataset:
+```
+cellsnake data --option integration --option advanced
+```
+
+See our documentation for detailed explanations and to read full features: https://cellsnake.readthedocs.io/
 
 Options and Arguments
 ---------------------
@@ -37,7 +57,8 @@ Main cellsnake executable, version: 0.1.0
 Usage:
     cellsnake <INPUT> [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--gene <text>] [--jobs <integer>] [--option <text>]... [--release-the-kraken <text>] [--taxa <text>] [--unlock|--remove] [--dry]
     cellsnake <INPUT> [--unlock|--remove] [--dry]
-    cellsnake --generate-configfile-template
+    cellsnake --generate-template
+    cellsnake --install-packages
     cellsnake (-h | --help)
     cellsnake --version
     cellsnake --init
@@ -48,13 +69,14 @@ Arguments:
     --resolution <text>                     Resolution for cluster detection, write "auto" for auto detection [default: 0.8].
     --percent_mt <text>                     Maximum mitochondrial gene percentage cutoff, for example, 5 or 10, write "auto" for auto detection [default: 10].
     --gene <text>                           Create publication ready plots for a gene or a list of genes from a text file.
-    --option <text>                         cellsnake run options: "minimal", "standard", "clustree", "advanced" [default: standard]. "integration" is to integrate.
+    --option <text>                         cellsnake run options: "minimal", "standard", "clustree", "advanced" [default: standard]. "integration" is to integrate and run on integrated samples.
     --release-the-kraken <text>             Kraken database folder.
     --taxa <text>                           Microbiome taxonomic level collapse to "domain", "kingdom", "phylum", "class", "order", "family", "genus", "species" [default: genus]
     -j <integer>, --jobs <integer>          Total CPUs. [default: 2]
 
 Options:
-    --generate-configfile-template     Generate config file template in the current directory.
+    --generate-template                Generate config file template in the current directory.
+    --install-packages                 Install, reinstall or check required R packages.
     -u, --unlock                       Rescue stalled jobs (Try this if the previous job ended prematurely or currently failing).
     -r, --remove                       Delete all output files (this won't affect input files).
     -d, --dry                          Dry run, nothing will be generated.
@@ -62,12 +84,12 @@ Options:
     --version                          Show version.
 ```
 
-Usage
------
-
 Output
 ------
 The `cellsnake` main executable will generate two main folders: analyses and results.  
-If run on an integrated dataset, analyses_integrated and results_integrated.
+If an integrated dataset available, analyses_integrated and results_integrated.
 
+
+Logs
+-----
 
