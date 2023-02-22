@@ -62,6 +62,9 @@ Options:
     --version                          Show version.
 ```
 
+Usage
+-----
+
 Output
 ------
 The `cellsnake` main executable will generate two main folders: analyses and results.  
