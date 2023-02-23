@@ -2,6 +2,8 @@
 
 A command line tool for easy and scalable single cell analysis
 
+<img src="cellsnake-logo.png" width="80" height="80">
+
 Installation
 ------------
 
