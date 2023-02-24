@@ -105,7 +105,7 @@ def check_command_line_arguments(arguments):
         print("You may combine integration with others so the integrated sample will be processed accordingly.")
         print("The default is : standard ")
         return False
-    elif len(arguments["--option"]) > 1 and [o for o in arguments["--option"] if o in ["minimal", "standard", "clustree", "advanced"]]:
+    elif len(arguments["--option"]) > 1 and all(o  in arguments["--option"] for o in ["minimal", "standard", "clustree", "advanced"]):
         print(arguments["--option"])
         print("You cannot combine two options, except integration, choose one of these : ",["minimal", "standard", "clustree", "advanced"])
         return False

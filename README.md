@@ -28,7 +28,9 @@ You should see this message if all the packages are available:
 ```
 
 
-Note: You have to install dependencies if you prefer Github installation. We strongly recommend Bioconda, `--install-packages` argument must be called to check if the R packages are available. 
+Note: You have to install dependencies if you prefer Github installation. We strongly recommend Bioconda and Mamba. 
+
+`--install-packages` argument must be always called to check if the R packages are available and installed correctly. 
 
 Quick start examples
 -------------------
