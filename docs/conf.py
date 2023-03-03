@@ -17,12 +17,12 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'MirMachine'
-copyright = '2021, Sinan U. Umu'
+project = 'cellsnake'
+copyright = '2023, Sinan U. Umu'
 author = 'Sinan U. Umu'
 
 # The full version, including alpha/beta/rc tags
-release = '0.2.11.2'
+release = '0.1.1c'
 
 
 # -- General configuration ---------------------------------------------------
