@@ -66,7 +66,7 @@ See our documentation for detailed explanations and to read full features: https
 Options and Arguments
 ---------------------
 ```
-Main cellsnake executable, version: 0.1.0
+Main cellsnake executable, version: 0.1.1c
 
 Usage:
     cellsnake <INPUT> [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--gene <text>] [--jobs <integer>] [--option <text>]... [--release-the-kraken <text>] [--taxa <text>] [--unlock|--remove] [--dry]

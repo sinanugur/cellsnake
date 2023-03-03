@@ -34,7 +34,7 @@ options = ["clustree","clusteringTree","minimal","standard","advanced"] #and int
 
 
 __author__ = 'Sinan U. Umu'
-__version__= '0.1.0'
+__version__= '0.1.1c'
 
 
 __licence__="""
@@ -110,10 +110,11 @@ def check_command_line_arguments(arguments):
         print("You cannot combine two options, except integration, choose one of these : ",["minimal", "standard", "clustree", "advanced"])
         return False
 
-    if arguments["--release-the-kraken"] and not os.path.exists(arguments["--release-the-kraken"]):
-        print("KrakenDB directory not found : ",arguments["--release-the-kraken"])
-        print("You should download a proper DB from this link (https://benlangmead.github.io/aws-indexes/k2), unpack it and point that directory.")
-        return False
+    if arguments["--release-the-kraken"]:
+        if not os.path.exists(arguments["--release-the-kraken"]) and not os.path.isfile(arguments["--release-the-kraken"] + "/inspect.txt"):
+            print("KrakenDB directory not found : ",arguments["--release-the-kraken"])
+            print("You should download a proper DB from this link (https://benlangmead.github.io/aws-indexes/k2), unpack it and point that directory.")
+            return False
     if arguments["--taxa"] not in ["domain", "kingdom", "phylum", "class", "order", "family", "genus", "species"]:
         print("Select a correct taxa level for microbiome analysis:",arguments["--taxa"])
         print("Possible options : ",["domain", "kingdom", "phylum", "class", "order", "family", "genus", "species"])
