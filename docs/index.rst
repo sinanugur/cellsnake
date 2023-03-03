@@ -12,7 +12,7 @@ A command line tool for easy and scalable single cell analysis
    :caption: Contents:
 
    installation.md
-   quick_start.md
+   quickstart.md
    fetalbrain.md
    output.md
    options.md

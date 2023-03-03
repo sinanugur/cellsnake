@@ -34,12 +34,12 @@ options = ["clustree","clusteringTree","minimal","standard","advanced"] #and int
 
 
 __author__ = 'Sinan U. Umu'
-__version__= '0.1.1c'
+__version__= '0.1.1d'
 
 
 __licence__="""
 MIT License
-Copyright (c) 2022 Sinan U. Umu (SUU) sinanugur@gmail.com
+Copyright (c) 2023 Sinan U. Umu (SUU) sinanugur@gmail.com
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -207,6 +207,8 @@ class CommandLine:
             self.snakemake = self.snakemake + " -n "
         if arguments["--unlock"]:
             self.snakemake = self.snakemake + " --unlock "
+        if arguments["--remove"]:
+            self.snakemake = self.snakemake + " --delete-all-output "
         
         self.add_config_argument()
         
@@ -253,11 +255,12 @@ def run_cellsnake(arguments):
 
 def run_integration(arguments):
 
-    #first run integration
-    snakemake_argument=CommandLine()
-    snakemake_argument.is_this_an_integration_run = True
-    snakemake_argument.prepare_arguments(arguments)
-    subprocess.check_call(str(snakemake_argument),shell=True)
+    if not arguments["--remove"]:
+        #first run integration
+        snakemake_argument=CommandLine()
+        snakemake_argument.is_this_an_integration_run = True
+        snakemake_argument.prepare_arguments(arguments)
+        subprocess.check_call(str(snakemake_argument),shell=True)
 
     #then run workflow on integrated dataset
     snakemake_argument=CommandLine()
