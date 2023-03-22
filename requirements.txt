@@ -9,3 +9,5 @@ snakemake>=7.22.0
 levenshtein
 docopt
 umap-learn
+plotly
+kaleido

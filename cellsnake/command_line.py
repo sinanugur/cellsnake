@@ -34,7 +34,7 @@ options = ["clustree","clusteringTree","minimal","standard","advanced"] #and int
 
 
 __author__ = 'Sinan U. Umu'
-__version__= '0.2.0dev0'
+__version__= '0.2.0dev1'
 
 
 __licence__="""
