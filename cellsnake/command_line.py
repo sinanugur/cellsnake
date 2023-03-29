@@ -34,7 +34,16 @@ options = ["clustree","clusteringTree","minimal","standard","advanced"] #and int
 
 
 __author__ = 'Sinan U. Umu'
-__version__= '0.2.0dev1'
+__version__= '0.2.0.dev5'
+__logo__="""
+             _  _                     _           
+            | || |                   | |          
+  ___   ___ | || | ___  _ __    __ _ | | __  ___  
+ / __| / _ \| || |/ __|| '_ \  / _` || |/ / / _ \ 
+| (__ |  __/| || |\__ \| | | || (_| ||   < |  __/ 
+ \___| \___||_||_||___/|_| |_| \__,_||_|\_\ \___| 
+                                                  
+"""  
 
 
 __licence__="""
@@ -58,7 +67,7 @@ SOFTWARE.
 """
 
 __doc__=f"""Main cellsnake executable, version: {__version__}
-
+{__logo__} 
 Usage:
     cellsnake <INPUT> [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--gene <text>] [--jobs <integer>] [--option <text>]... [--release-the-kraken <text>] [--taxa <text>] [--unlock|--remove] [--dry]
     cellsnake <INPUT> [--unlock|--remove] [--dry]
@@ -217,7 +226,9 @@ class CommandLine:
         logname = "_".join(["cellsnake",self.runid, datetime.datetime.now().strftime("%y%m%d_%H%M%S"),"runlog"])
         stop = timeit.default_timer()
         with open(logname,"w") as f:
-            f.write("Run ID : " + self.runid + "\n")
+            f.write(__logo__ + "\n")
+            f.write("Run ID : " + __version__ + "\n")
+            f.write("Cellnake version : " + self.runid + "\n")
             f.write("Cellsnake arguments : " + " ".join(sys.argv) + "\n\n")
             f.write("------------------------------" + "\n")
             f.write("Snakemake arguments : " + str(self.snakemake) + "\n\n")

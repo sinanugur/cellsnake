@@ -20,7 +20,7 @@ with open("README.md","r") as readme:
 
 setup(
     name="cellsnake",
-    version="0.2.0dev1",
+    version="0.2.0.dev5",
     packages=find_packages(exclude=('tests*','testing*')),
     long_description=long_description,
     long_description_content_type="text/markdown",
