@@ -34,7 +34,7 @@ options = ["clustree","clusteringTree","minimal","standard","advanced"] #and int
 
 
 __author__ = 'Sinan U. Umu'
-__version__= '0.2.0.dev5'
+__version__= '0.2.0.dev7'
 __logo__="""
              _  _                     _           
             | || |                   | |          
@@ -75,7 +75,6 @@ Usage:
     cellsnake --install-packages
     cellsnake (-h | --help)
     cellsnake --version
-    cellsnake --init
 
 Arguments:
     INPUT                                   Input directory or a file to process (if a directory given, batch mode is ON).
@@ -136,7 +135,7 @@ class CommandLine:
         self.snakemake="snakemake --rerun-incomplete -k "
         self.runid="".join(random.choices("abcdefghisz",k=3) + random.choices("123456789",k=5))
         self.config=[]
-        self.configfile=False
+        self.configfile_loaded=False
         self.is_integrated_sample=False
         self.is_this_an_integration_run=False
         self.parameters=dict()
@@ -156,7 +155,7 @@ class CommandLine:
 
 
     def load_and_add_default_configfile_argument(self,arguments):
-        if self.configfile is False:
+        if self.configfile_loaded is False:
             if arguments["--configfile"]:
                 self.snakemake = self.snakemake + " --configfile={}".format(arguments["--configfile"])
                 configfile=arguments["--configfile"]
@@ -166,14 +165,17 @@ class CommandLine:
 
             with open(configfile) as f:
                 self.parameters=yaml.load(f,Loader=SafeLoader)
-            self.configfile=True
+            self.configfile_loaded=True
+        
         self.change_parameters(arguments)
 
-    def change_parameters(self,arguments):
-        if self.configfile is True:
-            self.parameters["resolution"] = arguments["--resolution"]
-            self.parameters["percent_mt"] = arguments["--percent_mt"]
-            #self.parameters["species"] = arguments["--species"]
+    def change_parameters(self,arguments): #change parameters if there is a config file
+        if self.configfile_loaded is True and arguments["--configfile"]:
+            arguments["--resolution"] = self.parameters["resolution"]
+            arguments["--percent_mt"] = self.parameters["percent_mt"]
+            arguments["--taxa"] = self.parameters["taxa"]
+
+
 
 
 
@@ -190,7 +192,6 @@ class CommandLine:
         self.config.append(f"cellsnake_path={cellsnake_path}/scrna/")
         self.config.append("resolution={}".format(arguments["--resolution"]))
         self.config.append("percent_mt={}".format(arguments["--percent_mt"]))
-        #self.config.append("species={}".format(arguments["--species"]))
         self.config.append("taxa={}".format(arguments["--taxa"]))
         self.config.append("runid={}".format(self.runid))
         if arguments["--gene"]:

@@ -1,41 +1,57 @@
 #These are also default settings of a Cellsnake run without any configfile
 #basic paramaters
-min_cells: 3
-min_features: 200 
-percent_mt: 10 #Mitochondrial genes maximum percentage, default 10, you can use "auto"
-percent_rp: 0 #Ribosomal genes minimum percentage, default no filtering
-highly_variable_features: 2000
-variable_selection_method: "vst"
+min_cells: 3 #seurat defaults, recommended
+min_features: 200 #seurat defaults, recommended, nFeature_RNA
+max_features: Inf #seurat default, nFeature_RNA, 5000 can be a good cutoff
+max_molecules: Inf #seurat default, nCount_RNA, to filter potential doublets, doublet filtering is already default, so keep this Inf
+min_molecules: 0 #seurat default, nCount_RNA, min_features usually handles this so keep it 0
+
+
+percent_mt: 10 #Mitochondrial genes maximum percentage (0-100), default 10, you can use "auto"
+percent_rp: 0 #Ribosomal genes minimum percentage (0-100), default no filtering
+highly_variable_features: 2000 #seurat defaults, recommended
+variable_selection_method: "vst" #seurat defaults, recommended
+
+#plotting paramaters
+min_percentage_to_plot: 2 #only plot clusters with more than 2% of cells, still all of them visible on HTMLs and on plots if labels are True
+show_labels: T #show labels on plots
 
 #doublet filtering, True:T or False:F
-doublet_filter: T
+doublet_filter: T #this may fail on some samples
 
 #clustering and normalization paramaters
 normalization_method: "LogNormalize"
 scale_factor: 10000
-resolution: "0.8" #default is 0.8 and 0.3 for integrated samples, you can write "auto" for automatic detection
+resolution: "0.3" #default is 0.8 and 0.3 for integrated samples, you can write "auto" for automatic detection
 
 #Differential expression paramaters
 logfc_threshold: 0.25
 test_use: "wilcox"
-
-
 marker_plots_per_cluster_n: 20 #plot summary marker plots for top markers
 umap_markers_plot: True
 tsne_markers_plot: False
 
-#GO enrichment paramaters
-mapping: "org.Hs.eg.db"
+#enrichment paramaters
+mapping: "org.Hs.eg.db" #you may install others from Bioconductor, this is for human
+organism: "hsa" #alternatives https://www.genome.jp/kegg/catalog/org_list.html
 
-#cerebroapp GSEA params
-gsea_file : "" #GSEA file is bundled (c2.cgp.v2022.1.Hs.symbols.gmt), you may download another one and write the exact path here
-gsea_group : "seurat_clusters"
+#SingleR reference
+singler_ref: "BlueprintEncodeData" # https://bioconductor.org/packages/release/data/experiment/vignettes/celldex/inst/doc/userguide.html#1_Overview
 
 #celltypist
 celltypist_model: "Immune_All_Low.pkl" #refer to Celltypist for another model 
 
-#krakendbfolder
-kraken_db_folder: #point a kraken db folde
+#krakendb settings
+kraken_db_folder:
 taxa: "genus" # available options "domain", "kingdom", "phylum", "class", "order", "family", "genus", "species"
 microbiome_min_cells: 1
 microbiome_min_features: 3
+confidence: 0.05 #see kraken2 manual
+min_hit_groups: 4 #see kraken2 manual
+
+#cellchat
+species: "human" #human or mouse is accepted, http://www.cellchat.org/cellchatdb/
+
+#integration params
+dims: 30
+reduction: "cca"
