@@ -1,5 +1,5 @@
 Installation
-------------
+============
 To install this package with conda run:
 
 ```
@@ -36,3 +36,26 @@ You should see this message if all the packages are available:
 ```
 
 Note: If installation of any R packages fail, you have to install them manually!
+
+
+How to use the Docker Image
+-----------------------
+Cellsnake has an official Docker image, located here: https://hub.docker.com/repository/docker/sinanugur/cellsnake
+
+
+
+You can pull the latest build:
+
+```
+docker pull sinanugur/cellsnake:latest
+```
+
+You can start a standard run:
+```
+docker run -it --rm -v $PWD:/app sinanugur/cellsnake:latest cellsnake data
+```
+
+or you can also use Podman as well, Podman is useful when you are using on HPC platforms without admin access.
+
+```
+podman run -it --rm -v $PWD:/app sinanugur/cellsnake:latest cellsnake data

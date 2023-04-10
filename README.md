@@ -1,8 +1,7 @@
 # cellsnake
 
-A command line tool for easy and scalable single cell analysis
-
-<img src="cellsnake-logo.png" width="80" height="80">
+A command line tool for easy and scalable single cell analysis  
+![Docker Pulls](https://img.shields.io/docker/pulls/sinanugur/cellsnake)
 
 Installation
 ------------
@@ -73,7 +72,6 @@ Usage:
     cellsnake --install-packages
     cellsnake (-h | --help)
     cellsnake --version
-    cellsnake --init
 
 Arguments:
     INPUT                                   Input directory or a file to process (if a directory given, batch mode is ON).
