@@ -34,7 +34,7 @@ options = ["clustree","clusteringTree","minimal","standard","advanced"] #and int
 
 
 __author__ = 'Sinan U. Umu'
-__version__= '0.2.0.dev9'
+__version__= '0.2.0.dev10'
 __logo__="""
              _  _                     _           
             | || |                   | |          
@@ -69,33 +69,82 @@ SOFTWARE.
 __doc__=f"""Main cellsnake executable, version: {__version__}
 {__logo__} 
 Usage:
-    cellsnake <INPUT> [--resolution <text>] [--percent_mt <text>] [--configfile <text>] [--gene <text>] [--jobs <integer>] [--option <text>]... [--release-the-kraken <text>] [--taxa <text>] [--unlock|--remove] [--dry]
+    cellsnake <INPUT> [--option <text>]... [options] [--unlock|--remove] [--dry]
     cellsnake <INPUT> [--unlock|--remove] [--dry]
     cellsnake --generate-template
     cellsnake --install-packages
     cellsnake (-h | --help)
     cellsnake --version
 
-Arguments:
-    INPUT                                   Input directory or a file to process (if a directory given, batch mode is ON).
-    -c <text>, --configfile <text>          Config file name (if not supplied, it will use default settings, you may generate a template, change it and use it in your runs).
-    --resolution <text>                     Resolution for cluster detection, write "auto" for auto detection [default: 0.8].
-    --percent_mt <text>                     Maximum mitochondrial gene percentage cutoff, for example, 5 or 10, write "auto" for auto detection [default: 10].
-    --gene <text>                           Create publication ready plots for a gene or a list of genes from a text file.
-    --option <text>                         cellsnake run options: "minimal", "standard", "clustree", "advanced" [default: standard]. "integration" is to integrate and run on integrated samples.
-    --release-the-kraken <text>             Kraken database folder.
-    --taxa <text>                           Microbiome taxonomic level collapse to "domain", "kingdom", "phylum", "class", "order", "family", "genus", "species" [default: genus]
-    -j <integer>, --jobs <integer>          Total CPUs. [default: 2]
+main arguments:
+    INPUT                                  Input directory or a file to process (if a directory given, batch mode is ON).
+    --option <text>                        cellsnake run options: "minimal", "standard", "clustree", "advanced" [default: standard].  "integration" is to integrate and run on integrated samples.
+    --configfile <text>                    Config file name in YAML format, for example, "config.yaml". No default but can be created with --generate-template.
+    --metadata <text>                      Metadata file name in CSV, TSV or Excel format, for example, "metadata.csv", header required, first column sample name. No default but can be created with --generate-template.
+    --metadata_column <text>               Metadata column for differential expression analysis [default: condition].
 
-Options:
-    --generate-template                Generate config file template in the current directory.
-    --install-packages                 Install, reinstall or check required R packages.
-    -u, --unlock                       Rescue stalled jobs (Try this if the previous job ended prematurely or currently failing).
-    -r, --remove                       Delete all output files (this won't affect input files).
-    -d, --dry                          Dry run, nothing will be generated.
-    -h, --help                         Show this screen.
-    --version                          Show version.
+other arguments:
+    --gene <gene or filename>              Create publication ready plots for a gene or a list of genes from a text file.
+    
+main options:
+    --percent_mt <double>                  Maximum mitochondrial gene percentage cutoff, 
+                                           for example, 5 or 10, write "auto" for auto detection [default: 10].
+    --resolution <double>                  Resolution for cluster detection, write "auto" for auto detection [default: 0.8].
 
+other options:
+    --doublet_filter <bool>                [default: True] #this may fail on some samples
+    --percent_rp <double>                  [default: 0] #Ribosomal genes minimum percentage (0-100), default no filtering
+    --min_cells <integer>                  [default: 3] #seurat default, recommended
+    --min_features <integer>               [default: 200] #seurat default, recommended, nFeature_RNA
+    --max_features <integer>               [default: Inf] #seurat default, nFeature_RNA, 5000 can be a good cutoff
+    --min_molecules <integer>              [default: 0] #seurat default, nCount_RNA, min_features usually handles this so keep it 0
+    --max_molecules <integer>              [default: Inf] #seurat default, nCount_RNA, to filter potential doublets, doublet filtering is already default, so keep this Inf
+    --highly_variable_features <integer>   [default: 2000] #seurat defaults, recommended
+    --variable_selection_method <text>     [default: vst] #seurat defaults, recommended
+    
+    --normalization_method <text>          [default: LogNormalize]
+    --scale_factor <integer>               [default: 10000]
+    --logfc_threshold <double>             [default: 0.25]
+    --test_use <text>                      [default: wilcox]
+
+
+    --mapping <text>                       [default: org.Hs.eg.db] #you may install others from Bioconductor, this is for human
+    --organism <text>                      [default: hsa] #alternatives https://www.genome.jp/kegg/catalog/org_list.html
+    --species <text>                       [default: human] for cellchat, #only human or mouse is accepted
+
+plotting parameters:
+    --min_percentage_to_plot <double>        [default: 2] #only show clusters more than % of cells on the legend
+    --show_labels <bool>                     [default: True] #
+    --marker_plots_per_cluster_n <integer>   [default: 20] #plot summary marker plots for top markers
+    --umap_markers_plot <bool>               [default: True]
+    --tsne_markers_plot <bool>               [default: False]
+
+annotation options:
+    --singler_ref <text>                    [default: BlueprintEncodeData] # https://bioconductor.org/packages/release/data/experiment/vignettes/celldex/inst/doc/userguide.html#1_Overview
+    --celltypist_model <text>               [default: Immune_All_Low.pkl] #refer to Celltypist for another model 
+
+microbiome options:
+    --kraken_db_folder <text>              No default, you need to provide a folder with kraken2 database
+    --taxa <text>                          [default: genus] # available options "domain", "kingdom", "phylum", "class", "order", "family", "genus", "species"
+    --microbiome_min_cells <integer>       [default: 1]
+    --microbiome_min_features <integer>    [default: 3]
+    --confidence <double>                  [default: 0.05] #see kraken2 manual
+    --min_hit_groups <integer>             [default: 4] #see kraken2 manual
+
+integration options:
+    --dims <integer>                       [default: 30] #refer to Seurat for more details
+    --reduction <text>                     [default: cca] #refer to Seurat for more details
+
+others:
+    --generate-template                    Generate config file template and metadata template in the current directory.
+    --install-packages                     Install, reinstall or check required R packages.
+    -j <integer>, --jobs <integer>         Total CPUs. [default: 2]
+    -u, --unlock                           Rescue stalled jobs (Try this if the previous job ended prematurely or currently failing).
+    -r, --remove                           Delete all output files (this won't affect input files).
+    -d, --dry                              Dry run, nothing will be generated.
+    -h, --help                             Show this screen.
+    --version                              Show version.
+    
 """
 
 
@@ -106,6 +155,10 @@ def check_command_line_arguments(arguments):
     if arguments["--configfile"]:
          if not os.path.isfile(arguments["--configfile"]):
             print("Config file given not found : ",arguments["--configfile"])
+            return False
+    if arguments["--metadata"]:
+         if not os.path.isfile(arguments["--metadata"]):
+            print("Metadata file given not found : ",arguments["--metadata"])
             return False
     if [o for o in arguments["--option"] if o not in ["minimal", "standard", "clustree", "integration", "advanced"]]:
         print("Select a correct option for analyses : ",arguments["--option"])
@@ -118,9 +171,9 @@ def check_command_line_arguments(arguments):
         print("You cannot combine two options, except integration, choose one of these : ",["minimal", "standard", "clustree", "advanced"])
         return False
 
-    if arguments["--release-the-kraken"]:
-        if not os.path.exists(arguments["--release-the-kraken"]) and not os.path.isfile(arguments["--release-the-kraken"] + "/inspect.txt"):
-            print("KrakenDB directory not found : ",arguments["--release-the-kraken"])
+    if arguments["--kraken_db_folder"]:
+        if not os.path.exists(arguments["--kraken_db_folder"]) and not os.path.isfile(arguments["--kraken_db_folder"] + "/inspect.txt"):
+            print("KrakenDB directory not found : ",arguments["--kraken_db_folder"])
             print("You should download a proper DB from this link (https://benlangmead.github.io/aws-indexes/k2), unpack it and point that directory.")
             return False
     if arguments["--taxa"] not in ["domain", "kingdom", "phylum", "class", "order", "family", "genus", "species"]:
@@ -139,6 +192,7 @@ class CommandLine:
         self.is_integrated_sample=False
         self.is_this_an_integration_run=False
         self.parameters=dict()
+        self.log=True #if dry unlock etc, no logging
         
     def __str__(self):
         return self.snakemake
@@ -154,26 +208,26 @@ class CommandLine:
         self.snakemake = self.snakemake + " --config " + " ".join(self.config)
 
 
-    def load_and_add_default_configfile_argument(self,arguments):
+    def load_configfile_if_available(self,arguments):
         if self.configfile_loaded is False:
             if arguments["--configfile"]:
                 self.snakemake = self.snakemake + " --configfile={}".format(arguments["--configfile"])
                 configfile=arguments["--configfile"]
-            else:
-                self.snakemake = self.snakemake + " --configfile={}".format(cellsnake_path + "/scrna/config.yaml")
-                configfile=cellsnake_path + "/scrna/config.yaml"
+            #else:
+            #    self.snakemake = self.snakemake + " --configfile={}".format(cellsnake_path + "/scrna/config.yaml")
+            #    configfile=cellsnake_path + "/scrna/config.yaml"
 
-            with open(configfile) as f:
-                self.parameters=yaml.load(f,Loader=SafeLoader)
-            self.configfile_loaded=True
+                with open(configfile) as f:
+                    self.parameters=yaml.load(f,Loader=SafeLoader)
+                self.configfile_loaded=True
         
-        self.change_parameters(arguments)
+                #self.change_parameters(arguments)
 
-    def change_parameters(self,arguments): #change parameters if there is a config file
-        if self.configfile_loaded is True and arguments["--configfile"]:
-            arguments["--resolution"] = self.parameters["resolution"]
-            arguments["--percent_mt"] = self.parameters["percent_mt"]
-            arguments["--taxa"] = self.parameters["taxa"]
+    #def change_parameters(self,arguments): #change parameters if there is a config file
+    #    if self.configfile_loaded is True and arguments["--configfile"]:
+    #        arguments["--resolution"] = self.parameters["resolution"]
+    #        arguments["--percent_mt"] = self.parameters["percent_mt"]
+    #        arguments["--taxa"] = self.parameters["taxa"]
 
 
 
@@ -185,14 +239,26 @@ class CommandLine:
     def prepare_arguments(self,arguments):
         self.snakemake = self.snakemake +  " -j {} ".format(arguments['--jobs']) #set CPU number
         self.snakemake = self.snakemake +  " -s {} ".format(f"{cellsnake_path}/scrna/workflow/Snakefile") #set Snakefile location
-        self.load_and_add_default_configfile_argument(arguments)
+        self.load_configfile_if_available(arguments)
         if self.is_this_an_integration_run is False and self.is_integrated_sample is False:
             self.config.append("datafolder={}".format(arguments['<INPUT>']))
 
         self.config.append(f"cellsnake_path={cellsnake_path}/scrna/")
-        self.config.append("resolution={}".format(arguments["--resolution"]))
-        self.config.append("percent_mt={}".format(arguments["--percent_mt"]))
-        self.config.append("taxa={}".format(arguments["--taxa"]))
+        for i,b in arguments.items():
+            if i not in ["--jobs","--configfile","--option","--gene","--kraken_db_folder","--unlock","--remove","--dry","--help","--version","<INPUT>","--install-packages","--generate-template"]:
+                k=i.lstrip("--")
+                if self.configfile_loaded is False: #if there is no config file, add all parameters given by the command line or defaults. command line parameters have priority over config file parameters
+                    self.config.append(k + "=" + str(b))
+                    self.parameters[k]=str(b)
+                else:
+                    if self.parameters.get(k) and i not in sys.argv:
+                        self.config.append(k + "=" + str(self.parameters.get(k)))
+                    else:
+                        self.config.append(k + "=" + str(b))
+                        self.parameters[k]=str(b)
+
+
+        
         self.config.append("runid={}".format(self.runid))
         if arguments["--gene"]:
             if os.path.isfile(arguments["--gene"]):
@@ -200,8 +266,8 @@ class CommandLine:
             else:
                 self.config.append("gene_to_plot={}".format(arguments["--gene"]))
 
-        if arguments["--release-the-kraken"]:
-            self.config.append("kraken_db_folder={}".format(arguments["--release-the-kraken"]))
+        if arguments["--kraken_db_folder"]:
+            self.config.append("kraken_db_folder={}".format(arguments["--kraken_db_folder"]))
             
 
         if self.is_integrated_sample:
@@ -215,27 +281,30 @@ class CommandLine:
             self.config.append("option=integration")
         if arguments["--dry"]:
             self.snakemake = self.snakemake + " -n "
+            self.log=False
         if arguments["--unlock"]:
             self.snakemake = self.snakemake + " --unlock "
+            self.log=False
         if arguments["--remove"]:
             self.snakemake = self.snakemake + " --delete-all-output "
-        
+            self.log=False
         self.add_config_argument()
         
     
     def write_to_log(self,start):
         logname = "_".join(["cellsnake",self.runid, datetime.datetime.now().strftime("%y%m%d_%H%M%S"),"runlog"])
         stop = timeit.default_timer()
-        with open(logname,"w") as f:
-            f.write(__logo__ + "\n")
-            f.write("Run ID : " + __version__ + "\n")
-            f.write("Cellnake version : " + self.runid + "\n")
-            f.write("Cellsnake arguments : " + " ".join(sys.argv) + "\n\n")
-            f.write("------------------------------" + "\n")
-            f.write("Snakemake arguments : " + str(self.snakemake) + "\n\n")
-            f.write("------------------------------" + "\n")
-            f.write("Run parameters: " + str(self.parameters) + "\n\n")
-            f.write("Total run time: {t:.2f} mins \n".format(t=(stop-start)/60))
+        if self.log:
+            with open(logname,"w") as f:
+                f.write(__logo__ + "\n")
+                f.write("Run ID : " + self.runid + "\n")
+                f.write("Cellnake version : " + __version__ + "\n")
+                f.write("Cellsnake arguments : " + " ".join(sys.argv) + "\n\n")
+                f.write("------------------------------" + "\n")
+                f.write("Snakemake arguments : " + str(self.snakemake) + "\n\n")
+                f.write("------------------------------" + "\n")
+                f.write("Run parameters: " + str(self.parameters) + "\n\n")
+                f.write("Total run time: {t:.2f} mins \n".format(t=(stop-start)/60))
 
 
 
@@ -302,6 +371,11 @@ def main():
             print("Generating config.yaml file...")
             print("You can use this as a template for a cellsnake run. You may change the settings.")
             shutil.copyfile(cellsnake_path + "/scrna/config.yaml", 'config.yaml')
+            print("Generating metadata.csv file...")
+            with open("metadata.csv","w") as f:
+                f.write("sample,condition\n")
+                f.write("sample1,condition1\n")
+                f.write("sample2,condition2\n")
             return
         if cli_arguments["--install-packages"]:
             subprocess.check_call(cellsnake_path + "/scrna/workflow/scripts/scrna-install-packages.R")
