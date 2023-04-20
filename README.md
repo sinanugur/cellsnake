@@ -1,23 +1,37 @@
 # cellsnake
 
-A command line tool for easy and scalable single cell analysis  
-![Docker Pulls](https://img.shields.io/docker/pulls/sinanugur/cellsnake)
+A command line tool for easy and scalable single cell RNA sequencing analysis  
+[![Docker Pulls](https://img.shields.io/docker/pulls/sinanugur/cellsnake)](https://hub.docker.com/r/sinanugur/cellsnake) [![PyPI version](https://badge.fury.io/py/cellsnake.svg)](https://badge.fury.io/py/cellsnake)  
+
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/cellsnake/badges/platforms.svg)](https://anaconda.org/bioconda/cellsnake) [![Anaconda-Server Badge](https://anaconda.org/bioconda/cellsnake/badges/latest_release_relative_date.svg)](https://anaconda.org/bioconda/cellsnake) [![Anaconda-Server Badge](https://anaconda.org/bioconda/cellsnake/badges/downloads.svg)](https://anaconda.org/bioconda/cellsnake)  
 
 Installation
 ------------
 
-Method for installing directly from the GitHub repo:
+Please use Bioconda repo for installation and first installation of Mamba is recommended. Then install to a clean environment.
 ```
-git clone https://github.com/sinanugur/cellsnake.git
-cd cellsnake
-pip install .
+conda install mamba -c conda-forge
+
+mamba create -n cellsnake -c bioconda -c conda-forge
+
 ```
+
+Apple Silicon computers have to force Osx64, you can install like this.
+
+```
+conda install mamba -c conda-forge
+
+CONDA_SUBDIR=osx-64 mamba create -n cellsnake -c bioconda -c conda-forge
+
+```
+
 
 Check if the installation works by calling the main script:  
 ```
 cellsnake --help
 ```
-then install and check if all the R packages are installed by typing:
+then install and check if all the R packages are installed by typing. Cellsnake auto install the packages when necessary but it is good to check if they are installable. 
+Only do this once. You can then move the environment to an offline location as well if required. We recommend our Docker image though, it is a better solution for installation problems.
 
 ```
 cellsnake --install-packages
@@ -35,29 +49,33 @@ Quick start examples
 -------------------
 Run `cellsnake` in a clean directory and `cellsnake` will create the required directories while running. You may download publicly available fetal brain dataset to test your `cellsnake` installation. The link is here.
 
+https://www.dropbox.com/sh/1qn2odtnci0vvtr/AADPxHH-GR4h-OuQG0TLQyxWa?dl=0
+
 After downloading the dataset, just point the data folder which contains the two dataset folders, this will trigger a standard cellsnake workflow:
 ```
-cellsnake data
+cellsnake standard data
 ```
 
-After the pipeline finishes, you may also integrate these two samples:
+After the pipeline finishes, go through the output files etc. You then can also integrate these two samples which makes sense.
 ```
-cellsnake data --option integration
-```
-
-To determine a manual resolution parameter, you can also create only a ClusTree:
-```
-cellsnake data --option integration --option clustree
+cellsnake integrate data
 ```
 
-Let's say you want a resolution of 0.1, then you can trigger a run with this resolution:
+Lets work on the integrated object from now on, we already processed the samples separately. 
+
+Lets do a minimal run, this will also generate a clustree plot as well which can be used to investigate the optimal resolution.
 ```
-cellsnake data --option integration --resolution 0.1
+cellsnake integrated minimal analyses_integrated/seurat/integrated.rds
 ```
 
-It is also possible to use automatic resolution selection, however this might be very slow in large datasets:
+Let's say you want a resolution of 0.1 after checking clustree plot, then you can trigger a run with this resolution.
 ```
-cellsnake data --option integration --resolution auto
+cellsnake integrated standard analyses_integrated/seurat/integrated.rds --resolution 0.1
+```
+
+It is also possible to use automatic resolution selection, however this might be very slow in large datasets.
+```
+cellsnake integrated standard analyses_integrated/seurat/integrated.rds --resolution auto
 ```
 
 See our documentation for detailed explanations and to read full features: https://cellsnake.readthedocs.io/
@@ -153,10 +171,13 @@ others:
 
 Output
 ------
-The `cellsnake` main executable will generate two main folders: analyses and results.  
-If an integrated dataset available, analyses_integrated and results_integrated.
+The `cellsnake` main executable will generate two main folders: analyses and results. If an integrated dataset available, analyses_integrated and results_integrated will be created.  
 
+The main directory structure will look like this, __resolution__ and __percent_mt__ can be visible on directory names. These are the only parameters that will generate a separate folders.
 
-Logs
------
+```
+results/integrated/percent_mt~auto/resolution~0.8/ #for regular samples
+results_integrated/integrated/percent_mt~auto/resolution~0.8/ #for integrated samples
+```
+
 
