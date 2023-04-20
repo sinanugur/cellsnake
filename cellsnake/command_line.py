@@ -22,6 +22,8 @@ import errno
 import os
 import yaml
 from yaml.loader import SafeLoader
+from subprocess import call
+import pathlib
 
 
 #from schema import Schema, And, Or, Use, SchemaError
@@ -34,7 +36,7 @@ options = ["clustree","clusteringTree","minimal","standard","advanced"] #and int
 
 
 __author__ = 'Sinan U. Umu'
-__version__= '0.2.0.dev10'
+__version__= '0.2.0.rc1'
 __logo__="""
              _  _                     _           
             | || |                   | |          
@@ -69,16 +71,23 @@ SOFTWARE.
 __doc__=f"""Main cellsnake executable, version: {__version__}
 {__logo__} 
 Usage:
-    cellsnake <INPUT> [--option <text>]... [options] [--unlock|--remove] [--dry]
-    cellsnake <INPUT> [--unlock|--remove] [--dry]
+    cellsnake <command> <INPUT> [options] [--unlock|--remove] [--dry]
+    cellsnake integrated <command> <INPUT> [options] [--unlock|--remove] [--dry]
     cellsnake --generate-template
     cellsnake --install-packages
     cellsnake (-h | --help)
     cellsnake --version
 
+commands:
+    minimal                                Run cellsnake with minimal workflow. 
+    standard                               Run cellsnake with standard workflow.
+    advanced                               Run cellsnake with advanced workflow.
+    clustree                               Run cellsnake with clustree workflow.
+    integrate                              Run cellsnake to integrate samples under analyses folder.
+                                           This option expects you have already finished processing multiple samples.
+
 main arguments:
     INPUT                                  Input directory or a file to process (if a directory given, batch mode is ON).
-    --option <text>                        cellsnake run options: "minimal", "standard", "clustree", "advanced" [default: standard].  "integration" is to integrate and run on integrated samples.
     --configfile <text>                    Config file name in YAML format, for example, "config.yaml". No default but can be created with --generate-template.
     --metadata <text>                      Metadata file name in CSV, TSV or Excel format, for example, "metadata.csv", header required, first column sample name. No default but can be created with --generate-template.
     --metadata_column <text>               Metadata column for differential expression analysis [default: condition].
@@ -152,6 +161,19 @@ def check_command_line_arguments(arguments):
     if not os.path.exists(arguments["<INPUT>"]):
         print("File or input directory not found : ",arguments["<INPUT>"])
         return False
+    if arguments["integrated"] and os.path.isdir(arguments["<INPUT>"]):
+        print("You are running integrated option but you provided a directory, not a Seurat object file !")
+        print("The default Seurat object is usually here, analyses_integrated/seurat/integrated.rds")
+        print("""You can try something like: "cellsnake integrated standard analyses_integrated/seurat/integrated.rds""")
+        return False
+    if arguments["integrated"] and os.path.isfile(arguments["<INPUT>"]):
+        file_extension = pathlib.Path(arguments["<INPUT>"])
+        if (file_extension.suffix).lower() not in [".rds"]:
+            print("You are running integrated option but you provided not a Seurat object file !")
+            print("The default Seurat object is usually here, analyses_integrated/seurat/integrated.rds")
+            print("""You can try something like: \n cellsnake integrated standard analyses_integrated/seurat/integrated.rds""")
+            return False
+
     if arguments["--configfile"]:
          if not os.path.isfile(arguments["--configfile"]):
             print("Config file given not found : ",arguments["--configfile"])
@@ -160,17 +182,6 @@ def check_command_line_arguments(arguments):
          if not os.path.isfile(arguments["--metadata"]):
             print("Metadata file given not found : ",arguments["--metadata"])
             return False
-    if [o for o in arguments["--option"] if o not in ["minimal", "standard", "clustree", "integration", "advanced"]]:
-        print("Select a correct option for analyses : ",arguments["--option"])
-        print("Possible options : ",["minimal", "standard", "clustree", "advanced","integration"])
-        print("You may combine integration with others so the integrated sample will be processed accordingly.")
-        print("The default is : standard ")
-        return False
-    elif len(arguments["--option"]) > 1 and all(o  in arguments["--option"] for o in ["minimal", "standard", "clustree", "advanced"]):
-        print(arguments["--option"])
-        print("You cannot combine two options, except integration, choose one of these : ",["minimal", "standard", "clustree", "advanced"])
-        return False
-
     if arguments["--kraken_db_folder"]:
         if not os.path.exists(arguments["--kraken_db_folder"]) and not os.path.isfile(arguments["--kraken_db_folder"] + "/inspect.txt"):
             print("KrakenDB directory not found : ",arguments["--kraken_db_folder"])
@@ -240,12 +251,12 @@ class CommandLine:
         self.snakemake = self.snakemake +  " -j {} ".format(arguments['--jobs']) #set CPU number
         self.snakemake = self.snakemake +  " -s {} ".format(f"{cellsnake_path}/scrna/workflow/Snakefile") #set Snakefile location
         self.load_configfile_if_available(arguments)
-        if self.is_this_an_integration_run is False and self.is_integrated_sample is False:
+        if self.is_this_an_integration_run is False:
             self.config.append("datafolder={}".format(arguments['<INPUT>']))
 
         self.config.append(f"cellsnake_path={cellsnake_path}/scrna/")
         for i,b in arguments.items():
-            if i not in ["--jobs","--configfile","--option","--gene","--kraken_db_folder","--unlock","--remove","--dry","--help","--version","<INPUT>","--install-packages","--generate-template"]:
+            if i not in ["--jobs","integrated","--configfile","--option","--gene","--kraken_db_folder","--unlock","--remove","--dry","--help","--version","<INPUT>","<command>","--install-packages","--generate-template"]:
                 k=i.lstrip("--")
                 if self.configfile_loaded is False: #if there is no config file, add all parameters given by the command line or defaults. command line parameters have priority over config file parameters
                     self.config.append(k + "=" + str(b))
@@ -274,8 +285,8 @@ class CommandLine:
             self.config.append("is_integrated_sample={}".format("True"))
 
 
-        if any(x for x in arguments["--option"] if x in options) and self.is_this_an_integration_run is False:
-            self.config.append("option={}".format(arguments["--option"][0]))
+        if  self.is_this_an_integration_run is False:
+            self.config.append("option={}".format(arguments['<command>']))
          
         elif self.is_this_an_integration_run:
             self.config.append("option=integration")
@@ -307,62 +318,37 @@ class CommandLine:
                 f.write("Total run time: {t:.2f} mins \n".format(t=(stop-start)/60))
 
 
-
-
-
-
-def run_cellsnake(arguments):
-    start = timeit.default_timer()
-    if  "integration" in arguments["--option"]:
-        try:
-            snakemake_argument=run_integration(arguments)
-            snakemake_argument.write_to_log(start)
-        except:
-            pass
-            """
-            if not arguments["--dry"]:
-                print(arguments)
-                snakemake_argument=run_workflow(arguments,option=["minimal"])
-                print(arguments)
-                snakemake_argument.write_to_log(start)
-                snakemake_argument=run_integration(arguments)
-                snakemake_argument.write_to_log(start)
-            """
-
-    else:
-        snakemake_argument=run_workflow(arguments)
-        snakemake_argument.write_to_log(start)
-
-
 def run_integration(arguments):
 
-    if not arguments["--remove"]:
-        #first run integration
-        snakemake_argument=CommandLine()
-        snakemake_argument.is_this_an_integration_run = True
-        snakemake_argument.prepare_arguments(arguments)
-        subprocess.check_call(str(snakemake_argument),shell=True)
+    start = timeit.default_timer()
+    snakemake_argument=CommandLine()
+    snakemake_argument.is_this_an_integration_run = True
+    snakemake_argument.prepare_arguments(arguments)
+    subprocess.check_call(str(snakemake_argument),shell=True)
+    snakemake_argument.write_to_log(start)
+
 
     #then run workflow on integrated dataset
-    snakemake_argument=CommandLine()
-    snakemake_argument.is_this_an_integration_run = False
-    snakemake_argument.is_integrated_sample = True
-    snakemake_argument.config.append("datafolder=analyses_integrated/seurat/integrated.rds")
-    try:
-        arguments["--option"].remove("integration")
-    except:
-        pass
-    snakemake_argument.prepare_arguments(arguments)
-    subprocess.check_call(str(snakemake_argument),shell=True)
-    return snakemake_argument
+    #snakemake_argument=CommandLine()
+    #snakemake_argument.is_this_an_integration_run = False
+    #snakemake_argument.is_integrated_sample = True
+    #snakemake_argument.config.append("datafolder=analyses_integrated/seurat/integrated.rds")
+    #try:
+    #    arguments["--option"].remove("integration")
+    #except:
+    #    pass
+    #snakemake_argument.prepare_arguments(arguments)
+    #subprocess.check_call(str(snakemake_argument),shell=True)
+    #return snakemake_argument
 
-def run_workflow(arguments,option=None):
+def run_workflow(arguments):
+    start = timeit.default_timer()
     snakemake_argument=CommandLine()
-    if option is not None:
-        arguments["--option"]=option
+    if arguments["integrated"]:
+        snakemake_argument.is_integrated_sample = True
     snakemake_argument.prepare_arguments(arguments)
     subprocess.check_call(str(snakemake_argument),shell=True)
-    return snakemake_argument
+    snakemake_argument.write_to_log(start)
 
 
 def main():
@@ -380,8 +366,19 @@ def main():
         if cli_arguments["--install-packages"]:
             subprocess.check_call(cellsnake_path + "/scrna/workflow/scripts/scrna-install-packages.R")
             return
-        else:
-            if check_command_line_arguments(cli_arguments) is False:
-                return    
-            else:
-                run_cellsnake(arguments=cli_arguments)
+        
+        if not check_command_line_arguments(cli_arguments):
+            print("""Please check your command line arguments. Use "cellsnake --help" for more information""")
+            return
+
+
+        if cli_arguments['<command>'] == 'minimal':
+            run_workflow(cli_arguments)
+        if cli_arguments['<command>'] == 'standard':
+            run_workflow(cli_arguments)
+        if cli_arguments['<command>'] == 'advanced':
+            run_workflow(cli_arguments)
+        if cli_arguments['<command>'] == 'clustree':
+            run_workflow(cli_arguments)
+        if cli_arguments['<command>'] == 'integrate':
+            run_workflow(cli_arguments)

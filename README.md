@@ -66,16 +66,23 @@ Options and Arguments
 ---------------------
 ```
 Usage:
-    cellsnake <INPUT> [--option <text>]... [options] [--unlock|--remove] [--dry]
-    cellsnake <INPUT> [--unlock|--remove] [--dry]
+    cellsnake <command> <INPUT> [options] [--unlock|--remove] [--dry]
+    cellsnake integrated <command> <INPUT> [options] [--unlock|--remove] [--dry]
     cellsnake --generate-template
     cellsnake --install-packages
     cellsnake (-h | --help)
     cellsnake --version
 
+commands:
+    minimal                                Run cellsnake with minimal workflow.
+    standard                               Run cellsnake with standard workflow.
+    advanced                               Run cellsnake with advanced workflow.
+    clustree                               Run cellsnake with clustree workflow.
+    integrate                              Run cellsnake to integrate samples under analyses folder.
+                                           This option expects you have already finished processing multiple samples.
+
 main arguments:
     INPUT                                  Input directory or a file to process (if a directory given, batch mode is ON).
-    --option <text>                        cellsnake run options: "minimal", "standard", "clustree", "advanced" [default: standard].  "integration" is to integrate and run on integrated samples.
     --configfile <text>                    Config file name in YAML format, for example, "config.yaml". No default but can be created with --generate-template.
     --metadata <text>                      Metadata file name in CSV, TSV or Excel format, for example, "metadata.csv", header required, first column sample name. No default but can be created with --generate-template.
     --metadata_column <text>               Metadata column for differential expression analysis [default: condition].
@@ -142,6 +149,7 @@ others:
     -h, --help                             Show this screen.
     --version                              Show version.
 ```
+
 
 Output
 ------

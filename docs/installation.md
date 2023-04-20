@@ -52,10 +52,11 @@ docker pull sinanugur/cellsnake:latest
 
 You can start a standard run:
 ```
-docker run -it --rm -v $PWD:/app sinanugur/cellsnake:latest cellsnake data
+docker run -it --rm -v $PWD:/app sinanugur/cellsnake:latest cellsnake standard data
 ```
 
 or you can also use Podman as well, Podman is useful when you are using on HPC platforms without admin access.
 
 ```
-podman run -it --rm -v $PWD:/app sinanugur/cellsnake:latest cellsnake data
+podman run -it --rm -v $PWD:/app sinanugur/cellsnake:latest cellsnake standard data
+```
