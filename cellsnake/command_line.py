@@ -173,7 +173,6 @@ def check_command_line_arguments(arguments):
             print("The default Seurat object is usually here, analyses_integrated/seurat/integrated.rds")
             print("""You can try something like: \n cellsnake integrated standard analyses_integrated/seurat/integrated.rds""")
             return False
-
     if arguments["--configfile"]:
          if not os.path.isfile(arguments["--configfile"]):
             print("Config file given not found : ",arguments["--configfile"])
