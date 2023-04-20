@@ -26,24 +26,26 @@ CONDA_SUBDIR=osx-64 mamba create -n cellsnake -c bioconda -c conda-forge
 ```
 
 
-Check if the installation works by calling the main script:  
+Check if the installation works by calling the main script.  
 ```
+conda activate cellsnake
 cellsnake --help
 ```
-then install and check if all the R packages are installed by typing. Cellsnake auto install the packages when necessary but it is good to check if they are installable. 
-Only do this once. You can then move the environment to an offline location as well if required. We recommend our Docker image though, it is a better solution for installation problems.
 
+Then install and check if all the R packages are installed by typing. 
 ```
 cellsnake --install-packages
+```
+
 
 You should see this message if all the packages are available:
+```
+cellsnake --install-packages
 [1] "All packages were installed...OK"
 ```
 
-
-Note: You have to install dependencies if you prefer Github installation. We strongly recommend Bioconda and Mamba. 
-
-`--install-packages` argument must be always called to check if the R packages are available and installed correctly. 
+Cellsnake auto install most of the packages when necessary or during the environment creation but it is good to check if they are installable. 
+Only do this once. You can then move the environment to an offline location as well if required. We recommend our Docker image and it is a better solution for installation problems.
 
 Quick start examples
 -------------------
