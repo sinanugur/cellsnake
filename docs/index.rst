@@ -5,6 +5,11 @@
 
 Welcome to cellsnake's documentation!
 ======================================
+.. image:: cellsnake-logo-blue-small.png
+   :scale: 30 %
+   :align: left
+   :alt: cellsnake logo
+
 A command line tool for easy and scalable single cell analysis
 
 .. toctree::
