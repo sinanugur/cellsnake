@@ -1,4 +1,4 @@
-# <img src="cellsnake-logo-blue-small.png"  width="15%">
+# <img src="cellsnake-logo-blue-small.png"  width="30%">
 
 
 
