@@ -1,14 +1,6 @@
-# <img src="cellsnake-logo-blue-small.png"  width="30%">
-
-
+# <table border ="0"> <tbody> <tr> <td rowspan="4"> <img src="cellsnake-logo-blue-small.png"  width="30%"> </td> <td> [![Docker Pulls](https://img.shields.io/docker/pulls/sinanugur/cellsnake)](https://hub.docker.com/r/sinanugur/cellsnake) [![Documentation Status](https://readthedocs.org/projects/cellsnake/badge/?version=latest)](https://cellsnake.readthedocs.io/en/latest/?badge=latest)  </td>  </tr> <tr>    <td> [![PyPI version](https://badge.fury.io/py/cellsnake.svg)](https://badge.fury.io/py/cellsnake) </td>  </tr>  <tr>    <td> [![Anaconda-Server Badge](https://anaconda.org/bioconda/cellsnake/badges/latest_release_relative_date.svg)](https://anaconda.org/bioconda/cellsnake) </td>  </tr>  <tr>    <td> [![Anaconda-Server Badge](https://anaconda.org/bioconda/cellsnake/badges/downloads.svg)](https://anaconda.org/bioconda/cellsnake)  </td>  </tr></tbody></table>
 
 A command line tool for easy and scalable single cell RNA sequencing analysis  
-
-[![Docker Pulls](https://img.shields.io/docker/pulls/sinanugur/cellsnake)](https://hub.docker.com/r/sinanugur/cellsnake) [![PyPI version](https://badge.fury.io/py/cellsnake.svg)](https://badge.fury.io/py/cellsnake)  
-
-[![Anaconda-Server Badge](https://anaconda.org/bioconda/cellsnake/badges/latest_release_relative_date.svg)](https://anaconda.org/bioconda/cellsnake) [![Anaconda-Server Badge](https://anaconda.org/bioconda/cellsnake/badges/downloads.svg)](https://anaconda.org/bioconda/cellsnake)  
-
-[![Documentation Status](https://readthedocs.org/projects/cellsnake/badge/?version=latest)](https://cellsnake.readthedocs.io/en/latest/?badge=latest)
 
 
 Installation
