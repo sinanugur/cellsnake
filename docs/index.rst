@@ -19,5 +19,6 @@ A command line tool for easy and scalable single cell analysis
    installation.md
    quickstart.md
    fetalbrain.md
+   fetalliver.md
    output.md
    options.md
