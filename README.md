@@ -6,11 +6,12 @@ A command line tool for easy and scalable single cell RNA sequencing analysis
 Installation
 ------------
 
-Please use Bioconda repo for installation and first installation of Mamba is recommended. Then install to a clean environment.
+Please use Bioconda repo for installation. Mamba installation is also recommended. To create a clean environment and install __cellsnake__, type:
 ```
 conda install mamba -c conda-forge
 
-mamba create -n cellsnake -c bioconda -c conda-forge
+mamba create -n cellsnake -c bioconda -c conda-forge cellsnake
+
 
 ```
 
@@ -19,7 +20,7 @@ Apple Silicon computers have to force Osx64, you can install like this.
 ```
 conda install mamba -c conda-forge
 
-CONDA_SUBDIR=osx-64 mamba create -n cellsnake -c bioconda -c conda-forge
+CONDA_SUBDIR=osx-64 mamba create -n cellsnake -c bioconda -c conda-forge cellsnake
 
 ```
 
@@ -30,7 +31,7 @@ conda activate cellsnake
 cellsnake --help
 ```
 
-Then install and check if all the R packages are installed by typing. 
+Then install the R packages by typing: 
 ```
 cellsnake --install-packages
 ```
@@ -42,8 +43,10 @@ cellsnake --install-packages
 [1] "All packages were installed...OK"
 ```
 
-Cellsnake auto install most of the packages when necessary or during the environment creation but it is good to check if they are installable. 
-Only do this once. You can then move the environment to an offline location as well if required. We recommend our Docker image and it is a better solution for installation problems.
+__Cellsnake__ auto install most of the packages when necessary or during the creation of environment but it is good to check if they are installable. 
+You can then move the environment to an offline location as well if required. We recommend our Docker image and it is a better solution for installation problems. Podman also works fine with our Docker image.
+
+See our Docker repo: https://hub.docker.com/repository/docker/sinanugur/cellsnake
 
 Quick start examples
 -------------------
@@ -51,24 +54,24 @@ Run `cellsnake` in a clean directory and `cellsnake` will create the required di
 
 https://www.dropbox.com/sh/1qn2odtnci0vvtr/AADPxHH-GR4h-OuQG0TLQyxWa?dl=0
 
-After downloading the dataset, just point the data folder which contains the two dataset folders, this will trigger a standard cellsnake workflow:
+After downloading the dataset, just point the data folder which contains the two datasets, this will trigger a standard cellsnake workflow:
 ```
 cellsnake standard data
 ```
 
-After the pipeline finishes, go through the output files etc. You then can also integrate these two samples which makes sense.
+After the pipeline finishes, browse the output files. You can also integrate these two samples which makes sense.
 ```
 cellsnake integrate data
 ```
 
-Lets work on the integrated object from now on, we already processed the samples separately. 
+That is it. Lets work on the integrated object from now on, we already processed the samples separately. 
 
-Lets do a minimal run, this will also generate a clustree plot as well which can be used to investigate the optimal resolution.
+Let's do a minimal run, this will also generate a __clustree__ plot as well which can be used to investigate the optimal resolution.
 ```
 cellsnake integrated minimal analyses_integrated/seurat/integrated.rds
 ```
 
-Let's say you want a resolution of 0.1 after checking clustree plot, then you can trigger a run with this resolution.
+You want a resolution of 0.1 after checking clustree plot, then you can trigger a run with this resolution.
 ```
 cellsnake integrated standard analyses_integrated/seurat/integrated.rds --resolution 0.1
 ```
