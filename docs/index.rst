@@ -10,7 +10,7 @@ Welcome to cellsnake's documentation!
    :align: left
    :alt: cellsnake logo
 
-A command line tool for easy and scalable single cell analysis
+A command line tool for easy and scalable single cell analysis  
 
 .. toctree::
    :maxdepth: 2
