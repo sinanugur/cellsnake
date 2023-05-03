@@ -46,7 +46,7 @@ cellsnake --install-packages
 __Cellsnake__ auto install most of the packages when necessary or during the creation of environment but it is good to check if they are installable. 
 You can then move the environment to an offline location as well if required. We recommend our Docker image and it is a better solution for installation problems. Podman also works fine with our Docker image.
 
-See our Docker repo: https://hub.docker.com/repository/docker/sinanugur/cellsnake
+See our Docker repo: https://hub.docker.com/r/sinanugur/cellsnake
 
 Quick start examples
 -------------------
