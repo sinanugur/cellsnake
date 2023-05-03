@@ -1,20 +1,24 @@
-.. MirMachine documentation master file, created by
-   sphinx-quickstart on Thu Dec 30 01:14:57 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. Cellsnake Documentation
+   :author: Sinan U. Umu
+   :copyright: Copyright (c) 2023, University of Oslo.
+   :date: 2023
 
-Welcome to cellsnake's documentation!
+Welcome to Cellsnake's Documentation!
 ======================================
+
 .. image:: cellsnake-logo-blue-small.png
    :scale: 30 %
    :align: left
-   :alt: cellsnake logo
+   :alt: Cellsnake logo
 
-A command line tool for easy and scalable single cell analysis  
+Cellsanke is a command line tool designed for easy and scalable single-cell analysis.
+
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Getting Started
 
    installation.md
    quickstart.md
@@ -22,3 +26,4 @@ A command line tool for easy and scalable single cell analysis
    fetalliver.md
    output.md
    options.md
+
