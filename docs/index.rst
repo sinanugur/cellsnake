@@ -7,7 +7,7 @@ Welcome to Cellsnake's Documentation!
 ======================================
 
 .. image:: cellsnake-logo-blue-small.png
-   :scale: 30 %
+   :scale: 50 %
    :align: left
    :alt: Cellsnake logo
 
