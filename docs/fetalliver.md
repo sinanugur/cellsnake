@@ -8,7 +8,7 @@ Lets try workflow on Fetal Liver dataset. You can download the dataset here:
 
 Since this dataset have 6 samples, rather than one MT percentage, make it automatic so that each sample. A minimal run is also enough, we do not want to analyze samples seperately.
 
-```shell
+```console
 snakemake -j 10 --config option=minimal percent_mt=auto
 ```
 
