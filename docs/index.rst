@@ -8,14 +8,11 @@ Welcome to Cellsnake's Documentation!
 
 .. image:: cellsnake-logo-blue-small.png
    :scale: 50 %
-   :align: left
+   :align: center
    :alt: Cellsnake logo
 
+
 Cellsnake is a command line tool designed for easy and scalable single-cell analysis.
-
-
-
-
 
 
 .. toctree::
