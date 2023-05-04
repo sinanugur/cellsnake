@@ -12,15 +12,13 @@ Welcome to Cellsnake's Documentation!
    :alt: Cellsnake logo
 
 Cellsnake is a command line tool designed for easy and scalable single-cell analysis.
-
-
-
-
+::
+::
 
 .. toctree::
    :maxdepth: 2
    :caption: Getting Started
-   
+
    installation.md
    quickstart.md
    fetalbrain.md
