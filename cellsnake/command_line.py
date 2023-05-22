@@ -36,7 +36,7 @@ options = ["clustree","clusteringTree","minimal","standard","advanced"] #and int
 
 
 __author__ = 'Sinan U. Umu'
-__version__= '0.2.0'
+__version__= '0.2.0.1'
 __logo__="""
              _  _                     _           
             | || |                   | |          
@@ -101,7 +101,7 @@ main options:
     --resolution <double>                  Resolution for cluster detection, write "auto" for auto detection [default: 0.8].
 
 other options:
-    --doublet_filter <bool>                [default: True] #this may fail on some samples
+    --doublet_filter <bool>                [default: True] #this may fail on some samples and on low memory. If you have a problem, try False.
     --percent_rp <double>                  [default: 0] #Ribosomal genes minimum percentage (0-100), default no filtering
     --min_cells <integer>                  [default: 3] #seurat default, recommended
     --min_features <integer>               [default: 200] #seurat default, recommended, nFeature_RNA
@@ -122,7 +122,7 @@ other options:
     --species <text>                       [default: human] for cellchat, #only human or mouse is accepted
 
 plotting parameters:
-    --min_percentage_to_plot <double>        [default: 2] #only show clusters more than % of cells on the legend
+    --min_percentage_to_plot <double>        [default: 5] #only show clusters more than % of cells on the legend
     --show_labels <bool>                     [default: True] #
     --marker_plots_per_cluster_n <integer>   [default: 20] #plot summary marker plots for top markers
     --umap_markers_plot <bool>               [default: True]
@@ -147,7 +147,7 @@ integration options:
 others:
     --generate-template                    Generate config file template and metadata template in the current directory.
     --install-packages                     Install, reinstall or check required R packages.
-    -j <integer>, --jobs <integer>         Total CPUs. [default: 2]
+    -j <integer>, --jobs <integer>         Total CPUs. [default: 1]
     -u, --unlock                           Rescue stalled jobs (Try this if the previous job ended prematurely or currently failing).
     -r, --remove                           Delete all output files (this won't affect input files).
     -d, --dry                              Dry run, nothing will be generated.
@@ -195,7 +195,7 @@ def check_command_line_arguments(arguments):
 
 class CommandLine:
     def __init__(self):
-        self.snakemake="snakemake --rerun-incomplete -k "
+        self.snakemake="snakemake --retries 5 --rerun-incomplete -k "
         self.runid="".join(random.choices("abcdefghisz",k=3) + random.choices("123456789",k=5))
         self.config=[]
         self.configfile_loaded=False
