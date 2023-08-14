@@ -36,7 +36,7 @@ options = ["clustree","clusteringTree","minimal","standard","advanced"] #and int
 
 
 __author__ = 'Sinan U. Umu'
-__version__= '0.2.0.1'
+__version__= '0.2.0.11'
 __logo__="""
              _  _                     _           
             | || |                   | |          
@@ -88,6 +88,8 @@ commands:
 
 main arguments:
     INPUT                                  Input directory or a file to process (if a directory given, batch mode is ON).
+                                           After integration, provide the Seurat object file not a directory to work on
+                                           integrated object, see tutorial if necessary (e.g. analyses_integrated/seurat/integrated.rds)
     --configfile <text>                    Config file name in YAML format, for example, "config.yaml". No default but can be created with --generate-template.
     --metadata <text>                      Metadata file name in CSV, TSV or Excel format, for example, "metadata.csv", header required, first column sample name. No default but can be created with --generate-template.
     --metadata_column <text>               Metadata column for differential expression analysis [default: condition].
