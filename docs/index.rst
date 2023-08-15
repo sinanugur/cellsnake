@@ -22,6 +22,7 @@ Cellsnake is a command line tool designed for easy and scalable single-cell anal
    installation.md
    quickstart.md
    fetalbrain.md
+   fetalbrain.rst
    fetalliver.md
    output.md
    options.md
