@@ -30,7 +30,7 @@ We can start run a __cellsnake__ minimal workflow which will generate the most b
 
 Run this command for a __dry run__, you will see the IDs of the detected samples under data folder and the outputs which will be created by __cellsnake__.
 ```bash
-cellsnake minimal data -dry
+cellsnake minimal data --dry
 ```
 
 You should see something like below and many things that will be generated...
@@ -65,6 +65,13 @@ results/10X_17_029/percent_mt~10/resolution~0.8
 If you are satisfied with the resolution and filtering, you may directly integrate these two samples or you can continue with alternative parameters. (We recommend to clean unused directories or create another folder and continue there.)
 
 
+
+
+
+
+
+
+
 Lets integrate the data and run standard workflow:
 
 ```bash
@@ -86,16 +93,29 @@ Now you will see the results under the folder, here the MT percentage is auto be
 results_integrated/integrated/percent_mt\~auto/resolution\~0.8
 ```
 
+.. note::
+    
+    We can easily change the parameters, for example, lets use a different resolution, for example, 0.7 is a good resolution according to the __clustree plot__.
 
-We can easily change the parameters, for example, lets use a different resolution, for example, 0.8 is a good resolution according to the __clustree plot__.
+.. figure:: plot_clustree.png
+    :width: 50%
+    :align: center
 
 ```bash
-cellsnake integrated standard analyses_integrated/seurat/integrated.rds --resolution 0.8
+cellsnake integrated standard analyses_integrated/seurat/integrated.rds --resolution 0.7
 ```
 
 
 You can generate additional analyses with advanced command.
 
 ```bash
-cellsnake integrated advanced analyses_integrated/seurat/integrated.rds --resolution 0.8
+cellsnake integrated advanced analyses_integrated/seurat/integrated.rds --resolution 0.7
+```
+
+
+
+It is also possible to use autoresolution on the integrated sample:
+
+```bash
+cellsnake integrated advanced analyses_integrated/seurat/integrated.rds --resolution auto
 ```
