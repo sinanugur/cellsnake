@@ -1,5 +1,7 @@
+**********************************
 Example run on Fetal Brain dataset 
-----------------------------------
+**********************************
+
 These samples are from  (La Manno et al., 2018) and you can download them here: https://www.dropbox.com/sh/1qn2odtnci0vvtr/AADPxHH-GR4h-OuQG0TLQyxWa?dl=0
 
 Put them into a folder, lets say data/ and they will look like this:
@@ -34,6 +36,9 @@ generated for two separate samples. You may change the sample names by simply ch
     We can inspect the outputs and if we are happy with the parameters, we can do a full run.
 
 Run this command for a **dry run**, you will see the IDs of the detected samples under data folder and the outputs which will be created by **cellsnake**.
+
+Start with a dry run
+####################
 
 .. code-block:: bash
 
@@ -77,7 +82,13 @@ You will see two sample results like this which shows that both samples were pro
     results/10X_17_029/percent_mt~10/resolution~0.8
 
 
+
+QC
+##
+
 For example, you can inspect the QC filtering results by opening the **results/10X_17_028/percent_mt~10/resolution~0.8/technicals/** files under.
+
+Another important forlder for QC is **results/10X_17_028/percent_mt~10/resolution~0.8/metrics/**
 
 .. image:: plot_mt.percent.png
     :width: 50%
@@ -98,7 +109,8 @@ If you are satisfied with the QC, you may directly integrate these two samples o
 
 
 
-
+Run a standard workflow
+#######################
 **Lets integrate the data and run standard workflow:**
 
 .. code-block:: bash

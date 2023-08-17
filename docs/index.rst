@@ -23,4 +23,5 @@ Welcome to **Cellsnake**'s Documentation!
    fetalliver.md
    output.md
    options.md
+   glossary.rst
 
