@@ -17,7 +17,7 @@ Welcome to **Cellsnake**'s Documentation!
    :maxdepth: 2
    :caption: Getting Started
 
-   installation.md
+   installation.rst
    quickstart.md
    fetalbrain.rst
    fetalliver.md
