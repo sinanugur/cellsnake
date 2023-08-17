@@ -3,16 +3,14 @@
    :copyright: Copyright (c) 2023, University of Oslo.
    :date: 2023
 
-Welcome to Cellsnake's Documentation!
-======================================
-
 .. image:: cellsnake-logo-blue-small.png
-   :scale: 50 %
+   :scale: 60 %
    :align: center
    :alt: Cellsnake logo
 
+Welcome to **Cellsnake**'s Documentation!
 
-Cellsnake is a command line tool designed for easy and scalable single-cell analysis.
+**Cellsnake** is a command line tool designed for easy and scalable single-cell analysis.
 
 
 .. toctree::
@@ -21,7 +19,6 @@ Cellsnake is a command line tool designed for easy and scalable single-cell anal
 
    installation.md
    quickstart.md
-   fetalbrain.md
    fetalbrain.rst
    fetalliver.md
    output.md
