@@ -64,6 +64,9 @@ You should see something like below and many things that will be generated.
 
 Looks fine, then trigger a minimal workflow run. 
 
+A minimal run
+#############
+
 .. code-block:: bash
 
     cellsnake minimal data
@@ -109,21 +112,24 @@ If you are satisfied with the QC, you may directly integrate these two samples o
 
 
 
-Run a standard workflow
-#######################
-**Lets integrate the data and run standard workflow:**
+Run integration on seperately processed samples
+###############################################
+**Lets integrate first**
 
 .. code-block:: bash
     
     cellsnake integrate data
 
 
-We can now work on the integrated object, the integrated object by default located at **analyses_integrated/seurat/integrated.rds**, cellsnake warns you if it cannot detect the correct file.
+After finishes, we can now work on the integrated object, the integrated object by default located at **analyses_integrated/seurat/integrated.rds**, cellsnake warns you if it cannot detect the correct file.
 
+Run a standard workflow on integrated object
+############################################
 Now we tell cellsnake to work on the integrated object
 
 .. code-block:: bash
     
+    #integrated object is by default located in this location.
     cellsnake integrated standard analyses_integrated/seurat/integrated.rds
 
 
@@ -139,7 +145,8 @@ Now we tell cellsnake to work on the integrated object
 
     
 
-
+Resolution parameter change granulation so clustering
+#####################################################
 We can easily change the parameters, for example, lets use a different resolution, for example, 0.7 is a good resolution according to the **clustree plot**.
 
 .. figure:: plot_clustree.png
@@ -152,6 +159,8 @@ We can easily change the parameters, for example, lets use a different resolutio
 
 
 
+Run an advanced workflow on integrated object
+#############################################
 You can generate additional analyses with advanced command.
 
 .. code-block:: bash
@@ -160,6 +169,8 @@ You can generate additional analyses with advanced command.
 
 
 
+Autoresolution is also possible
+###############################
 
 It is also possible to use autoresolution on the integrated sample:
 
