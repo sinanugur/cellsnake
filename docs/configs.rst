@@ -1,10 +1,89 @@
 ************
-Config files
+Config Files
 ************
 
 Cellsnake can be configured using a config file. The config file is in YAML format.
 
 The use can specify the config file to use with the **--configfile** option. If no config file is specified, cellsnake will use the default parameters.
 
-The default config file looks like this, which is packaged with cellsnake:
+It is recommended to use the default config file as a template and modify it to your needs. You can download the default one here: https://raw.githubusercontent.com/sinanugur/cellsnake/main/config.yaml
 
+
+
+The default config file looks like this. This is modified for human samples. 
+
+.. code-block:: bash
+
+    #These are also default settings of a Cellsnake run without any configfile
+    #basic paramaters
+    min_cells: 3 #seurat defaults, recommended
+    min_features: 200 #seurat defaults, recommended, nFeature_RNA
+    max_features: Inf #seurat default, nFeature_RNA, 5000 can be a good cutoff
+    max_molecules: Inf #seurat default, nCount_RNA, to filter potential doublets, doublet filtering is already default, so keep this Inf
+    min_molecules: 0 #seurat default, nCount_RNA, min_features usually handles this so keep it 0
+
+
+    percent_mt: 10 #Mitochondrial genes maximum percentage (0-100), default 10, you can use "auto"
+    percent_rp: 0 #Ribosomal genes minimum percentage (0-100), default no filtering
+    highly_variable_features: 2000 #seurat defaults, recommended
+    variable_selection_method: "vst" #seurat defaults, recommended
+
+    #plotting paramaters
+    min_percentage_to_plot: 2 #only plot clusters with more than 2% of cells, still all of them visible on HTMLs and on plots if labels are True
+    show_labels: T #show labels on plots
+
+    #doublet filtering, True:T or False:F
+    doublet_filter: T #this may fail on some samples
+
+    #clustering and normalization paramaters
+    normalization_method: "LogNormalize"
+    scale_factor: 10000
+    resolution: "0.8" #seurat default
+
+    #Differential expression paramaters
+    logfc_threshold: 0.25
+    test_use: "wilcox"
+    marker_plots_per_cluster_n: 20 #plot summary marker plots for top markers
+    umap_markers_plot: True
+    tsne_markers_plot: False
+
+    #enrichment paramaters
+    mapping: "org.Hs.eg.db" #you may install others from Bioconductor, this is for human
+    organism: "hsa" #alternatives https://www.genome.jp/kegg/catalog/org_list.html
+
+    #SingleR reference
+    singler_ref: "BlueprintEncodeData" # https://bioconductor.org/packages/release/data/experiment/vignettes/celldex/inst/doc/userguide.html#1_Overview
+    singler_granulation: "label.main" #label.main or label.fine
+
+    #celltypist
+    celltypist_model: "Immune_All_Low.pkl" #refer to Celltypist for another model 
+
+    #krakendb settings
+    kraken_db_folder:
+    taxa: "genus" # available options "domain", "kingdom", "phylum", "class", "order", "family", "genus", "species"
+    microbiome_min_cells: 1
+    microbiome_min_features: 3
+    confidence: 0.05 #see kraken2 manual
+    min_hit_groups: 4 #see kraken2 manual
+
+    #cellchat
+    species: "human" #human or mouse is accepted, http://www.cellchat.org/cellchatdb/
+
+    #integration params
+    dims: 30
+    reduction: "cca"
+
+
+Changing the organism using configs
+===================================
+
+You can change the organism and mapping to use it for other species.
+
+For example, for mouse you can change these options:
+
+.. code-block:: bash
+
+    species: "mouse"
+    mapping: "org.Mm.eg.db"
+    organism: "mmu"
+    singler_ref: "MouseRNAseqData"

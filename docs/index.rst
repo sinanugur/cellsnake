@@ -22,6 +22,7 @@ Welcome to **Cellsnake**'s Documentation!
    fetalbrain.rst
    fetalliver.rst
    output.md
+   configs.rst
    options.md
    glossary.rst
 

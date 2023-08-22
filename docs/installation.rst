@@ -1,5 +1,6 @@
+************
 Installation
-============
+************
 To install this package with conda run:
 
 .. code-block:: bash
