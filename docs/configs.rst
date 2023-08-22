@@ -9,6 +9,12 @@ The use can specify the config file to use with the **--configfile** option. If 
 It is recommended to use the default config file as a template and modify it to your needs. You can download the default one here: https://raw.githubusercontent.com/sinanugur/cellsnake/main/config.yaml
 
 
+.. code-block:: bash
+
+    #example usage with a config file
+    cellsnake standard data --configfile config.yaml
+
+
 
 The default config file looks like this. This is modified for human samples. 
 
@@ -74,12 +80,12 @@ The default config file looks like this. This is modified for human samples.
     reduction: "cca"
 
 
-Changing the organism using configs
-===================================
+Changing the organism to mouse
+==============================
 
 You can change the organism and mapping to use it for other species.
 
-For example, for mouse you can change these options:
+For example, for mouse you can change these parameters:
 
 .. code-block:: bash
 
