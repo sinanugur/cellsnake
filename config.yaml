@@ -22,7 +22,7 @@ doublet_filter: T #this may fail on some samples
 #clustering and normalization paramaters
 normalization_method: "LogNormalize"
 scale_factor: 10000
-resolution: "0.8" #default is 0.8 and 0.3 for integrated samples, you can write "auto" for automatic detection
+resolution: "0.8" #seurat default
 
 #Differential expression paramaters
 logfc_threshold: 0.25
@@ -37,6 +37,7 @@ organism: "hsa" #alternatives https://www.genome.jp/kegg/catalog/org_list.html
 
 #SingleR reference
 singler_ref: "BlueprintEncodeData" # https://bioconductor.org/packages/release/data/experiment/vignettes/celldex/inst/doc/userguide.html#1_Overview
+singler_granulation: "label.main" #label.main or label.fine
 
 #celltypist
 celltypist_model: "Immune_All_Low.pkl" #refer to Celltypist for another model 

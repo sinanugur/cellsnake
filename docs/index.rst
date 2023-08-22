@@ -18,9 +18,9 @@ Welcome to **Cellsnake**'s Documentation!
    :caption: Getting Started
 
    installation.rst
-   quickstart.md
+   quickstart.rst
    fetalbrain.rst
-   fetalliver.md
+   fetalliver.rst
    output.md
    options.md
    glossary.rst
