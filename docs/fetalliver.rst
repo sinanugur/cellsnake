@@ -37,6 +37,8 @@ Now it is time to work on the integrated sample. We can run full advanced run on
     snakemake -j 40 --config  datafolder=analyses_integrated/seurat/integrated.rds resolution=auto option=standard is_integrated_sample=True --rerun-incomplete
 
 
+
+
 We can include the metadata to compare different groups
 =======================================================
 

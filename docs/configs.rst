@@ -1,5 +1,5 @@
 ************
-Config Files
+Config Files (Parameter Files)
 ************
 
 Cellsnake can be configured using a config file. The config file is in YAML format.

@@ -21,8 +21,8 @@ Welcome to **Cellsnake**'s Documentation!
    quickstart.rst
    fetalbrain.rst
    fetalliver.rst
-   output.md
+   kraken.rst
    configs.rst
-   options.md
+   options.rst
    glossary.rst
 
