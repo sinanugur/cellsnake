@@ -2,7 +2,7 @@
 Example run on Fetal Brain dataset 
 **********************************
 
-These samples are from  (La Manno et al., 2018) and you can download them here: https://www.dropbox.com/sh/1qn2odtnci0vvtr/AADPxHH-GR4h-OuQG0TLQyxWa?dl=0
+These samples are from  (La Manno et al., 2018) and you can download them from our Zeonodo repo: https://zenodo.org/record/7919631/files/fetal-brain-data.zip?download=1
 
 Put them into a folder, lets say data/ and they will look like this:
 

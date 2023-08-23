@@ -16,4 +16,6 @@ Here we explain some of the terminology related to Cellsnake and Seurat.
 
 **rp.percent** Ribosomal RNA percentage. We use "(?i)(^RP[SL])" regex pattern to detect ribosomal genes. Usually no filtering required for ribosomal genes.
 
-**Snakemake** Snakemake is a workflow managament tool to design bioinformatics pipeline. Cellsnake contains a Snakemake workflow based on mostly Seurat which is an R based single-cell analysis tool.
+**Snakemake** Snakemake is a workflow managament tool to design bioinformatics pipelines. Cellsnake contains a Snakemake workflow based on mostly Seurat which is an R based single-cell analysis tool.
+
+**SingleR** It is an R package for annotation of single-cell RNA-seq data. **plot_annotations** predicted using SingleR package. You can also access additional plots under singler directory related to annotation.

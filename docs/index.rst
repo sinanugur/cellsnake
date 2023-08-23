@@ -22,6 +22,7 @@ Welcome to **Cellsnake**'s Documentation!
    fetalbrain.rst
    fetalliver.rst
    kraken.rst
+   markers.rst
    configs.rst
    options.rst
    glossary.rst

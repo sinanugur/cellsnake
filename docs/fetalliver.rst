@@ -18,6 +18,7 @@ A minimal run is also enough, we do not want to analyze samples separately.
 .. code-block:: bash
 
     snakemake -j 20 --config option=minimal percent_mt=auto
+    #cellsnake cli equivalent of this command is: cellsnake minimal data --percent_mt auto -j 20
 
 Integration
 ===========
@@ -26,6 +27,7 @@ Then we can run integration.
 .. code-block:: bash
     
     snakemake -j 10 --config option=integration
+    #cellsnake cli equivalent of this command is: cellsnake integrate data
 
 
 Work on the integrated sample
@@ -35,6 +37,7 @@ Now it is time to work on the integrated sample. We can run full advanced run on
 .. code-block:: bash
 
     snakemake -j 40 --config  datafolder=analyses_integrated/seurat/integrated.rds resolution=auto option=standard is_integrated_sample=True --rerun-incomplete
+    #cellsnake cli equivalent of this command is: cellsnake integrated standard analyses_integrated/seurat/integrated.rds --resolution auto  -j 40
 
 
 
@@ -61,6 +64,18 @@ The first column should be the sample names and the second column is the differe
 .. code-block:: bash
 
     snakemake -j 40 --config  datafolder=analyses_integrated/seurat/integrated.rds resolution=auto option=standard metadata=metadata.csv is_integrated_sample=True --rerun-incomplete
+
+You will get volcano plots for each group vs the others.
+
+.. image:: metaplot_volcano-condition-0.png
+    :width: 50%
+    :align: center
+
+
+.. image:: metaplot_volcano-condition-1.png
+    :width: 50%
+    :align: center
+
 
 
 
