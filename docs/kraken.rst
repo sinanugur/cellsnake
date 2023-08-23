@@ -20,8 +20,9 @@ However, if they are absent or not accessible, cellranger may send a warning or 
     #or as a parameter
     cellsnake minimal data --kraken_db_folder /path/to/kraken2_db
     #we can use the snakemake workflow in a similar way
-
     snakemake -j 10 --config option=minimal kraken_db_folder=/path/to/kraken2_db
+
+
     #since confidence and min_hit_groups are very important parameters to decrease false positives for karaken2 analysis, we can specify them in the config file or as a parameter as well.
     #if you do not specify them, the default values will be used and written into folders accordingly.
     #you can later supply alternative values for these parameters in the config file or as a parameter which create another folder.
