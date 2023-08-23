@@ -3,11 +3,11 @@ Options and Arguments
 *********************
 
 
-It is important to change parameter and arguments. Usually the defaults are fine but changing resolution and MT trimming can affect the results.
+It is important to tweak parameter and arguments. Usually the defaults are fine but changing resolution and MT trimming percentage can affect the results.
 
 Cellsnake generates different directories for these main parameters so you can check their effects on the results. 
 
-If you are satisfied with the results, you can delete the other directories and keep the others for integration or later use.
+If you decide a value, you can delete the unnecessary directories and keep the others for integration or later use.
 
 For example, if you run cellsnake with the following parameters:
 
@@ -16,6 +16,7 @@ For example, if you run cellsnake with the following parameters:
     #data here is a directory with your input files, there can be multiple directories, symlinks are allowed.
     #this command will generate results under folder: results/sample_name/percent_mt~5/resolution~0.6/.
     cellsnake minimal data --percent_mt 5 --resolution 0.6
+
 
 
 
