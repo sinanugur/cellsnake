@@ -42,9 +42,14 @@ Now it is time to work on the integrated sample. We can run full advanced run on
     snakemake -j 40 --config  datafolder=analyses_integrated/seurat/integrated.rds resolution=auto option=standard is_integrated_sample=True --rerun-incomplete
     #cellsnake cli equivalent of this command is: cellsnake integrated standard analyses_integrated/seurat/integrated.rds --resolution auto  -j 40
 
-.. image:: images/plot_dimplot_umap-orig.ident.png
-    :width: 50%
-    :align: center
+.. |fig1| image:: images/plot_dimplot_umap-orig.ident.png
+   :width: 45%
+
+.. |fig2| image:: images/plot_dimplot_umap-seurat_clusters.png
+   :width: 45%
+
+|fig1| |fig2|
+Integrated UMAP labelled samples and clusters
 
 
 We can include the metadata to compare different groups
@@ -80,6 +85,11 @@ You will get volcano plots for each group vs the others.
 .. image:: metaplot_volcano-condition-1.png
     :width: 50%
     :align: center
+
+
+
+AHSP gene expression looks interesting, we can visualize it.
+
 
 
 
