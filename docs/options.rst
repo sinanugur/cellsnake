@@ -19,7 +19,27 @@ For example, if you run cellsnake with the following parameters:
 
 
 
+Modes
+=====
 
+Cellsnake has 5 modes: minimal, standard, advanced, integration and clustree.
+
+.. list-table:: Cellsnake modes
+    :widths: 25 50
+    :header-rows: 1
+
+    * - Mode
+      - Outputs
+    * - **minimal**
+      - Dimension reduction plots, QC metrics, technical plots (MT, counts, gene, feature), clustree plot
+    * - **standard**
+      - All minimal outputs and CellTypist, singleR annotations, enrichment analyses tables, trajectory plots, summarized marker plots
+    * - **advanced**
+      - All standard outputs and CellChat results, detailed top markers per cluster plots
+    * - **clustree**
+      - Clustree plot and basic QC plots
+    * - **integrate**
+      - A single integrated object for integrated analysis
 
 
 
