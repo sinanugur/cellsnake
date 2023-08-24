@@ -1,9 +1,9 @@
 **********************************
 Example run on Fetal Liver dataset 
 **********************************
-Cellsnake can be run directly using the Snakemake workflow. We recommend the wrapper but the Snakemake workflow gives more control in some use cases.
+Cellsnake can be run directly as a **snakemake** workflow. We recommend the wrapper but the snakemake workflow gives more control in some use cases.
 
-Let's try workflow on Fetal Liver dataset. You can apply this idea to your own samples.
+Let's try workflow on Fetal Liver dataset, accession number PRJEB34784. You can apply this idea to your own samples.
 
 
 
@@ -13,7 +13,7 @@ Since this dataset have 6 samples, rather than one MT percentage, we can make it
 
 Starting with a minimal run
 ===========================
-A minimal run is also enough, we do not want to analyze samples separately.
+A minimal run is also enough, because we do not want to analyze samples separately but as an integrated sample.
 
 .. code-block:: bash
 
@@ -27,7 +27,10 @@ Then we can run integration.
 .. code-block:: bash
     
     snakemake -j 10 --config option=integration
-    #cellsnake cli equivalent of this command is: cellsnake integrate data
+    #cellsnake cli equivalent of this command is: cellsnake integrate data -j 10
+
+
+
 
 
 Work on the integrated sample
@@ -39,7 +42,9 @@ Now it is time to work on the integrated sample. We can run full advanced run on
     snakemake -j 40 --config  datafolder=analyses_integrated/seurat/integrated.rds resolution=auto option=standard is_integrated_sample=True --rerun-incomplete
     #cellsnake cli equivalent of this command is: cellsnake integrated standard analyses_integrated/seurat/integrated.rds --resolution auto  -j 40
 
-
+.. image:: images/plot_dimplot_umap-orig.ident.png
+    :width: 50%
+    :align: center
 
 
 We can include the metadata to compare different groups
