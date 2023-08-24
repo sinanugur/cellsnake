@@ -17,14 +17,23 @@ To install this package with Mamba run:
     conda install mamba -c conda-forge
     mamba install cellsnake -c bioconda -c conda-forge 
 
+.. code-block:: bash
+
+    #to install on Apple Silicon computers (M1 or newer)
+    conda install mamba -c conda-forge
+    CONDA_SUBDIR=osx-64 mamba create -n cellsnake -c bioconda -c conda-forge cellsnake
+
+
 
 Check if the installation works by calling the main script.
+
 .. code-block:: bash
 
     cellsnake --help
 
 
 then install and check if all the R packages are installed by typing:
+
 .. code-block:: bash
 
     cellsnake --install-packages
@@ -54,6 +63,7 @@ You can pull the latest build:
 
 
 You can start a standard run:
+
 .. code-block:: bash
     
     docker run -it --rm -v $PWD:/app sinanugur/cellsnake:latest cellsnake standard data
@@ -64,6 +74,13 @@ or you can also use Podman as well, Podman is useful when you are using on HPC p
 .. code-block:: bash
 
     podman run -it --rm -v $PWD:/app sinanugur/cellsnake:latest cellsnake standard data
+
+
+.. note::
+    
+    It is not possible to run cellsnake natively on Apple Silicon (M1 or newer) for now. For example, Kraken2 is not compatible with this architecture and our Docker image is therefore AMD64-based. It is however possible to run without a Docker container using the Bioconda package. Yet still it has to be forced to use Osx-64 architecture and all the dependencies can be resolved. This offers a faster experience than Docker container for Apple laptops. 
+
+
 
 
 How to request higher memory and CPUs?

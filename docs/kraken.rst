@@ -40,5 +40,5 @@ However, if they are absent or not accessible, cellranger may send a warning or 
 
 .. note::
 
-    When metagenome analyses finish for all the samples in paralel with the main workflow, they will be automatically merged into a single file for later integration. Therefore, you do not need to worry. 
+    When metagenome analyses finish for all the samples in parallel with the main workflow, they will be automatically merged into a single file for later integration. Therefore, you do not need to worry. 
     

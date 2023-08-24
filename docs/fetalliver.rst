@@ -88,12 +88,22 @@ You will get volcano plots for each group vs the others.
 
 
 
+Visualisation of a marker gene
+==============================
 AHSP gene expression looks interesting, we can visualize it.
 
+.. code-block:: bash
+
+    snakemake -j 40 --config  datafolder=analyses_integrated/seurat/integrated.rds resolution=auto option=standard is_integrated_sample=True gene=AHSP --rerun-incomplete
+    #cellsnake cli equivalent of this command is: cellsnake integrated standard analyses_integrated/seurat/integrated.rds --gene AHPS --resolution auto  -j 40
+    #it is also possible to give a file with a list of genes to visualize
+    #cellsnake cli equivalent of this command is: cellsnake integrated standard analyses_integrated/seurat/integrated.rds --gene marker.tsv --resolution auto  -j 40
+    #marker.tsv simple contain a gene name in each line and automatically read by workflow
 
 
-
-
+.. image:: AHSP.png
+    :width: 95%
+    :align: center
 
 
 
