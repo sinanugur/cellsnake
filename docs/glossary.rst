@@ -12,7 +12,7 @@ Here we explain some of the terminology related to Cellsnake and Seurat.
 
 **nCount_RNA** is the total number of molecules detected within a cell. You can access this plot under *technicals*.
 
-**mt.percent** Mitochondrial RNA percentage. We use "^[Mm][Tt]-" regex pattern to detect MT genes. Higher percentage of MT genes may suggest death cells.
+**mt.percent** Mitochondrial RNA percentage. We use "^[Mm][Tt]-" regex pattern to detect MT genes. Higher percentage of MT genes may suggest dead cells.
 
 **rp.percent** Ribosomal RNA percentage. We use "(?i)(^RP[SL])" regex pattern to detect ribosomal genes. Usually no filtering required for ribosomal genes.
 

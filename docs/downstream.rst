@@ -16,6 +16,12 @@ For example, to load the Seurat object for the analysis with 10% MT threshold an
 
     library(Seurat)
     seurat_object <- readRDS("analyses/processed/percent_mt~10/resolution~0.8/sample_name.rds")
+    #integrated equivalent of this command is
+
+    seurat_object <- readRDS("analyses_integrated/processed/percent_mt~auto/resolution~0.8/integrated.rds")
+
+
+
 
 
 Annotation of cell types for this same dataset can be found in the `analyses/singler` directory.
@@ -23,7 +29,7 @@ Annotation of cell types for this same dataset can be found in the `analyses/sin
 .. code-block:: R
 
     library(Seurat)
-    seurat_object <- readRDS("./analyses/singler/percent_mt~10/resolution~0.8/sample_name.rds")
+    singler_predictions <- readRDS("analyses/singler/percent_mt~10/resolution~0.8/sample_name.rds")
 
 
 Kraken2 predictions (metagenomics results) for this same dataset can be found in the `analyses/kraken` directory.
@@ -31,6 +37,9 @@ Kraken2 predictions (metagenomics results) for this same dataset can be found in
 .. code-block:: R
 
     library(Seurat)
-    seurat_object <- readRDS("./analyses/kraken/0_3/percent_mt~10/resolution~0.8/sample_name/microbiome-full-genus-level.rds")
+    kraken_predictions <- readRDS("analyses/kraken/0_3/percent_mt~10/resolution~0.8/sample_name/microbiome-full-genus-level.rds") #genus level predictions
+
+
+
 
 
