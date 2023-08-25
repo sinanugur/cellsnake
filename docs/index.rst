@@ -25,5 +25,6 @@ Welcome to **Cellsnake**'s Documentation!
    markers.rst
    configs.rst
    options.rst
+   downstream.rst
    glossary.rst
 
