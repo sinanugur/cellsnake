@@ -3,6 +3,8 @@
 
 A command line tool for easy and scalable single cell RNA sequencing analysis  
 
+Our main Snakemake workflow is here: https://github.com/sinanugur/scrna-workflow  
+
 Installation
 ------------
 
