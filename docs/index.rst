@@ -9,8 +9,11 @@
    :alt: Cellsnake logo
 
 Welcome to **Cellsnake**'s Documentation!
+-----------------------------------------
 
-**Cellsnake** is a command line tool designed for easy and scalable single-cell analysis.
+**Cellsnake** is a command line tool designed for easy and scalable single-cell analysis. 
+
+It is build on Seurat4 but Seurat5 is coming soon!
 
 
 .. toctree::
