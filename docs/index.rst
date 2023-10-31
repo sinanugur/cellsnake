@@ -11,9 +11,14 @@
 Welcome to **Cellsnake**'s Documentation!
 -----------------------------------------
 
-**Cellsnake** is a command line tool designed for easy and scalable single-cell analysis. 
+**Cellsnake** is a command line tool designed for easy and scalable single-cell analysis. It can be used as a Snakemake workflow or as a standalone command line tool.
 
-It is build on Seurat4 but Seurat5 is coming soon!
+It is build on **Seurat4** but **Seurat5** version is coming soon!
+
+Our main repository location: https://github.com/sinanugur/cellsnake  
+
+Our Snakemake workflow location: https://github.com/sinanugur/scrna-workflow  
+
 
 
 .. toctree::
