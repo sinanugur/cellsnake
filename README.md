@@ -50,6 +50,12 @@ You can then move the environment to an offline location as well if required. We
 
 See our Docker repo: https://hub.docker.com/r/sinanugur/cellsnake
 
+Our latest Docker image is here: https://hub.docker.com/r/sinanugur/cellsnake/tags?page=1&ordering=last_updated
+
+Docker is strongly recommended for running __cellsnake__ in a controlled environment or in Apple MAC.  
+
+```
+
 Quick start examples
 -------------------
 Run `cellsnake` in a clean directory and `cellsnake` will create the required directories while running. You may download publicly available fetal brain dataset to test your `cellsnake` installation. The link is here.
