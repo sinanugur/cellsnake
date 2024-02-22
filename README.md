@@ -14,6 +14,9 @@ conda install mamba -c conda-forge
 
 mamba create -n cellsnake -c bioconda -c conda-forge cellsnake
 
+#Alternative installation to get a more up-to-date environment.
+
+mamba env create -n cellsnake --file=environment.yaml
 
 ```
 
@@ -24,6 +27,8 @@ conda install mamba -c conda-forge
 
 CONDA_SUBDIR=osx-64 mamba create -n cellsnake -c bioconda -c conda-forge cellsnake
 
+#Alternative
+CONDA_SUBDIR=osx-64 mamba env create -n cellsnake --file=environment.yaml
 ```
 
 
